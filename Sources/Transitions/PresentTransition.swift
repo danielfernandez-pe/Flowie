@@ -8,24 +8,24 @@
 import UIKit
 
 @MainActor
-final class PresentTransition: NSObject, Transition {
-    var rootViewController: UIViewController {
+public final class PresentTransition: NSObject, Transition {
+    public var rootViewController: UIViewController {
         navigationController.topViewController?.lastPresentedViewController ?? navigationController
     }
     
-    weak var delegate: TransitionDelegate?
-    weak var coordinator: BaseCoordinator?
-    let navigationController = UINavigationController()
+    public weak var delegate: TransitionDelegate?
+    public weak var coordinator: BaseCoordinator?
+    public let navigationController = UINavigationController()
     private let presentingViewController: UIViewController
 
-    init(presentingViewController: UIViewController) {
+    public init(presentingViewController: UIViewController) {
         self.presentingViewController = presentingViewController
         super.init()
         navigationController.presentationController?.delegate = self
         navigationController.delegate = self
     }
 
-    func open(_ controller: UIViewController) {
+    public func open(_ controller: UIViewController) {
         if navigationController.viewControllers.isEmpty {
             navigationController.viewControllers = [controller]
             presentingViewController.present(navigationController, animated: true)
@@ -34,7 +34,7 @@ final class PresentTransition: NSObject, Transition {
         }
     }
 
-    func dismiss() {
+    public func dismiss() {
         presentingViewController.dismiss(animated: true) { [weak self] in
             guard let self else { return }
             if let coordinator {
@@ -43,21 +43,21 @@ final class PresentTransition: NSObject, Transition {
         }
     }
 
-    func pop() {
+    public func pop() {
         navigationController.popViewController(animated: true)
     }
     
-    func popToRoot() {
+    public func popToRoot() {
         navigationController.popToRootViewController(animated: true)
     }
     
-    func pop(to controller: UIViewController) {
+    public func pop(to controller: UIViewController) {
         navigationController.popToViewController(controller, animated: true)
     }
 }
 
 extension PresentTransition: UIAdaptivePresentationControllerDelegate {
-    func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
+    public func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
         if let coordinator {
             delegate?.transitionDidDismiss(self, navigationController: navigationController, coordinator: coordinator)
         }
@@ -65,7 +65,7 @@ extension PresentTransition: UIAdaptivePresentationControllerDelegate {
 }
 
 extension PresentTransition: UINavigationControllerDelegate {
-    func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
+    public func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
         guard let fromViewController = navigationController.transitionCoordinator?.viewController(forKey: .from) else { return }
         
         // is showing

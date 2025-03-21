@@ -9,13 +9,13 @@ import UIKit
 import Combine
 
 @MainActor
-class BaseCoordinator {
-    var transition: any Transition {
+open class BaseCoordinator {
+    public var transition: any Transition {
         guard let last = transitions.last else { fatalError("There should always be one transition in a coordinator") }
         return last
     }
     
-    weak var parentCoordinator: BaseCoordinator?
+    public weak var parentCoordinator: BaseCoordinator?
     
     ///
     /// View controllers managed within the current coordinator's flow.
@@ -45,7 +45,7 @@ class BaseCoordinator {
     ///
     private var transitions: [any Transition] = []
     
-    init(transition: (any Transition)? = nil) {
+    public init(transition: (any Transition)? = nil) {
         if let transition = transition {
             self.transitions.append(transition)
         }
@@ -63,7 +63,7 @@ class BaseCoordinator {
     /// Calling this method marks the beginning of the coordinator's responsibility
     /// for managing a specific part of the app's navigation.
     ///
-    func start() {
+    open func start() {
         fatalError("Subclasses must implement start()")
     }
     
@@ -82,7 +82,7 @@ class BaseCoordinator {
     ///   - controller: The `UIViewController` to be presented.
     ///   - transition: The transition that handles how the controller is displayed.
     ///
-    func open(controller: UIViewController, with transition: some Transition) {
+    public func open(controller: UIViewController, with transition: some Transition) {
         childControllers.append(controller)
         
         if !transitions.contains(where: { $0 === transition }) {
@@ -103,7 +103,7 @@ class BaseCoordinator {
     ///
     /// - Parameter coordinator: The child coordinator to be started.
     ///
-    func open(coordinator: BaseCoordinator) {
+    public func open(coordinator: BaseCoordinator) {
         childCoordinators.append(coordinator)
         
         if !transitions.contains(where: { $0 === coordinator.transition }) {
@@ -124,7 +124,7 @@ class BaseCoordinator {
     /// Call this method when the coordinator has completed its flow and
     /// should be deallocated.
     ///
-    func finish() {
+    public func finish() {
         parentCoordinator?.removeControllers(from: self)
         coordinatorDidFinish()
     }
@@ -146,7 +146,7 @@ class BaseCoordinator {
     /// super.coordinatorDidFinish()
     /// ```
     ///
-    func coordinatorDidFinish() {
+    open func coordinatorDidFinish() {
         childControllers.removeAll()
         childCoordinators.removeAll()
         parentCoordinator?.childDidFinish(self)
@@ -226,7 +226,7 @@ extension BaseCoordinator: TransitionDelegate {
     /// The transition delegate is reassigned to this parent coordinator, and the
     /// current coordinator finishes its execution.
     ///
-    func transitionDidPop(_ transition: any Transition, controller: UIViewController, coordinator: BaseCoordinator) {
+    public func transitionDidPop(_ transition: any Transition, controller: UIViewController, coordinator: BaseCoordinator) {
         coordinator.childControllers.removeAll(where: { $0 === controller })
         
         if coordinator.childControllers.isEmpty {
@@ -246,7 +246,7 @@ extension BaseCoordinator: TransitionDelegate {
     ///   to the parent coordinator, and the current coordinator finishes its lifecycle.
     /// - Finally, it calls this method on the parent coordinator to evaluate its flow and perform any necessary cleanup.
     ///
-    func transitionDidPopToRoot(_ transition: any Transition,
+    public func transitionDidPopToRoot(_ transition: any Transition,
                                 navigationController: UINavigationController,
                                 coordinator: BaseCoordinator) {
         guard let rootController = navigationController.viewControllers.first else {
@@ -290,7 +290,7 @@ extension BaseCoordinator: TransitionDelegate {
     ///   Here, we don't have to reassign the transition delegate to the parent since the transition
     ///   is being removed, and the parent coordinator likely has its own `PresentTransition` delegate.
     ///
-    func transitionDidDismiss(_ transition: any Transition, navigationController: UINavigationController, coordinator: BaseCoordinator) {
+    public func transitionDidDismiss(_ transition: any Transition, navigationController: UINavigationController, coordinator: BaseCoordinator) {
         coordinator.transitions.removeAll(where: { $0 === transition })
         
         for controller in navigationController.viewControllers {

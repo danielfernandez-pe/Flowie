@@ -9,14 +9,14 @@ import SwiftUI
 import Combine
 
 @MainActor
-protocol TransitionDelegate: AnyObject {
+public protocol TransitionDelegate: AnyObject {
     func transitionDidPop(_ transition: Transition, controller: UIViewController, coordinator: BaseCoordinator)
     func transitionDidPopToRoot(_ transition: Transition, navigationController: UINavigationController, coordinator: BaseCoordinator)
     func transitionDidDismiss(_ transition: Transition, navigationController: UINavigationController, coordinator: BaseCoordinator)
 }
 
 @MainActor
-protocol Transition: AnyObject {
+public protocol Transition: AnyObject {
     var delegate: TransitionDelegate? { get set }
     var coordinator: BaseCoordinator? { get set }
     
