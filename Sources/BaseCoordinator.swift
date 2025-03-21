@@ -10,6 +10,14 @@ import Combine
 
 @MainActor
 open class BaseCoordinator {
+    ///
+    /// This property is used to determine if the coordinator is the root coordinator.
+    /// It means it only manages coordinators and not view controllers.
+    ///
+    /// E.g., the `AppCoordinator` is a root coordinator because it manages the navigation flow of the app.
+    ///
+    open var isRootCoordinator: Bool { return false }
+    
     public var transition: any Transition {
         guard let last = transitions.last else { fatalError("There should always be one transition in a coordinator") }
         return last
@@ -172,6 +180,12 @@ open class BaseCoordinator {
     /// Never call it manually.**
     ///
     private func removeControllers(from childCoordinator: BaseCoordinator) {
+        if isRootCoordinator {
+            transition.dismiss()
+            transitions.removeLast()
+            return
+        }
+        
         if transition is PushTransition {
             if let lastController = childControllers.last {
                 transition.pop(to: lastController)
@@ -297,7 +311,7 @@ extension BaseCoordinator: TransitionDelegate {
             coordinator.childControllers.removeAll(where: { $0 === controller })
         }
         
-        if coordinator.childControllers.isEmpty {
+        if coordinator.childControllers.isEmpty && !coordinator.isRootCoordinator {
             coordinator.coordinatorDidFinish()
             
             if let parent = coordinator.parentCoordinator {

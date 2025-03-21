@@ -7,6 +7,14 @@
 
 import UIKit
 
+public struct PresentParameters {
+    let modalPresentationStyle: UIModalPresentationStyle
+    
+    public init(modalPresentationStyle: UIModalPresentationStyle) {
+        self.modalPresentationStyle = modalPresentationStyle
+    }
+}
+
 @MainActor
 public final class PresentTransition: NSObject, Transition {
     public var rootViewController: UIViewController {
@@ -17,9 +25,11 @@ public final class PresentTransition: NSObject, Transition {
     public weak var coordinator: BaseCoordinator?
     public let navigationController = UINavigationController()
     private let presentingViewController: UIViewController
+    private let parameters: PresentParameters?
 
-    public init(presentingViewController: UIViewController) {
+    public init(presentingViewController: UIViewController, parameters: PresentParameters? = nil) {
         self.presentingViewController = presentingViewController
+        self.parameters = parameters
         super.init()
         navigationController.presentationController?.delegate = self
         navigationController.delegate = self
@@ -61,6 +71,14 @@ extension PresentTransition: UIAdaptivePresentationControllerDelegate {
         if let coordinator {
             delegate?.transitionDidDismiss(self, navigationController: navigationController, coordinator: coordinator)
         }
+    }
+    
+    public func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
+        if let parameters {
+            return parameters.modalPresentationStyle
+        }
+        
+        return .formSheet
     }
 }
 
