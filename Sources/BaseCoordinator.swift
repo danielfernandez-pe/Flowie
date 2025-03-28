@@ -201,14 +201,21 @@ open class BaseCoordinator {
     private func removeControllers(from childCoordinator: BaseCoordinator,
                                    didChildPresentedController: Bool,
                                    completion: @escaping () -> Void) {
-        if isRootCoordinator {
-            transitions.removeLast()
-            completion()
-            return
-        }
-        
         if transition is PushTransition {
-            if let lastController = self.childControllers.last {
+            var lastController: UIViewController?
+            if isRootCoordinator {
+                /// since is a root coordinator it means that itself doesn't have child controllers so we need the last controller of the
+                /// child coordinator before the last one (which is been removed now).
+                if let index = childCoordinators.firstIndex(where: { $0 === childCoordinator }),
+                   index - 1 < childCoordinators.count {
+                    lastController = childCoordinators[index - 1].childControllers.last
+                }
+            } else {
+                /// if is not a root coordinator, we can just grab the last controller the coordinator has.
+                lastController = childControllers.last
+            }
+
+            if let lastController {
                 transition.delegate = nil
                 
                 if didChildPresentedController {
@@ -293,6 +300,13 @@ extension BaseCoordinator: TransitionDelegate {
                                        navigationController: UINavigationController,
                                        coordinator: BaseCoordinator) {
         guard let firstController = navigationController.viewControllers.first else { return }
+        
+        /// when is the root coordinator, we only need to remove the last transition since it doesn't have child controllers
+        if isRootCoordinator {
+            transitions.removeLast()
+            return
+        }
+        
         let isCoordinatorMainRootOfNavigation = coordinator.childControllers.contains(where: { $0 === firstController })
         
         /// if the current coordinator has the first controller of the navigation we can assure that this is the one that will be remaining after the popToRoot.
