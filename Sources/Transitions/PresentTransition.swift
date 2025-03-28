@@ -2,11 +2,15 @@
 //  PresentTransition.swift
 //  Flowie
 //
-//  Created by Daniel Fernandez Yopla on 21.03.2025.
+//  Created by Daniel Fernandez on 14.03.2025.
 //
 
 import UIKit
 
+///
+/// This structure will let you define the customization you want
+/// the presentation to have.
+///
 public struct PresentParameters {
     let modalPresentationStyle: UIModalPresentationStyle
     
@@ -34,18 +38,19 @@ public final class PresentTransition: NSObject, Transition {
         navigationController.presentationController?.delegate = self
         navigationController.delegate = self
     }
-
-    public func open(_ controller: UIViewController) {
-        if navigationController.viewControllers.isEmpty {
-            navigationController.viewControllers = [controller]
-            presentingViewController.present(navigationController, animated: true)
-        } else {
-            navigationController.pushViewController(controller, animated: true)
-        }
+    
+    deinit {
+        print("\(Self.self) got deinit")
     }
 
-    public func dismiss() {
+    public func open(_ controller: UIViewController) {
+        navigationController.setViewControllers([controller], animated: true)
+        presentingViewController.present(navigationController, animated: true)
+    }
+
+    public func dismiss(completion: (() -> Void)?) {
         presentingViewController.dismiss(animated: true) { [weak self] in
+            completion?()
             guard let self else { return }
             if let coordinator {
                 delegate?.transitionDidDismiss(self, navigationController: navigationController, coordinator: coordinator)
@@ -61,8 +66,14 @@ public final class PresentTransition: NSObject, Transition {
         navigationController.popToRootViewController(animated: true)
     }
     
-    public func pop(to controller: UIViewController) {
-        navigationController.popToViewController(controller, animated: true)
+    public func pop(to controller: UIViewController, completion: (() -> Void)?) {
+        navigationController.popToViewController(controller, animated: true) {
+            completion?()
+        }
+    }
+    
+    public func reassignNavigationDelegate() {
+        navigationController.delegate = self
     }
 }
 
@@ -96,7 +107,10 @@ extension PresentTransition: UINavigationControllerDelegate {
             if navigationController.viewControllers.count == 1 {
                 delegate?.transitionDidPopToRoot(self, navigationController: navigationController, coordinator: coordinator)
             } else {
-                delegate?.transitionDidPop(self, controller: fromViewController, coordinator: coordinator)
+                delegate?.transitionDidPop(self,
+                                           controller: fromViewController,
+                                           navigationController: navigationController,
+                                           coordinator: coordinator)
             }
         }
     }

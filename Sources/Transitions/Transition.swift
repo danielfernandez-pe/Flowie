@@ -10,9 +10,16 @@ import Combine
 
 @MainActor
 public protocol TransitionDelegate: AnyObject {
-    func transitionDidPop(_ transition: Transition, controller: UIViewController, coordinator: BaseCoordinator)
-    func transitionDidPopToRoot(_ transition: Transition, navigationController: UINavigationController, coordinator: BaseCoordinator)
-    func transitionDidDismiss(_ transition: Transition, navigationController: UINavigationController, coordinator: BaseCoordinator)
+    func transitionDidPop(_ transition: some Transition,
+                          controller: UIViewController,
+                          navigationController: UINavigationController,
+                          coordinator: BaseCoordinator)
+    func transitionDidPopToRoot(_ transition: some Transition,
+                                navigationController: UINavigationController,
+                                coordinator: BaseCoordinator)
+    func transitionDidDismiss(_ transition: some Transition,
+                              navigationController: UINavigationController,
+                              coordinator: BaseCoordinator)
 }
 
 @MainActor
@@ -26,6 +33,17 @@ public protocol Transition: AnyObject {
     func open(_ controller: UIViewController)
     func pop()
     func popToRoot()
-    func pop(to controller: UIViewController)
-    func dismiss()
+    func pop(to controller: UIViewController, completion: (() -> Void)?)
+    func dismiss(completion: (() -> Void)?)
+    func reassignNavigationDelegate()
+}
+
+extension Transition {
+    func dismiss(completion: (() -> Void)? = nil) {
+        dismiss(completion: completion)
+    }
+    
+    func pop(to controller: UIViewController, completion: (() -> Void)? = nil) {
+        pop(to: controller, completion: completion)
+    }
 }
