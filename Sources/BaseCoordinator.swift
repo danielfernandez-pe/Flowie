@@ -127,7 +127,7 @@ open class BaseCoordinator {
     public func open(coordinator: BaseCoordinator) {
         childCoordinators.append(coordinator)
         
-        if !transitions.contains(where: { $0 === coordinator.transition }) {
+        if !transitions.contains(where: { $0 === coordinator.transition }), !coordinator.isRootCoordinator {
             transitions.append(coordinator.transition)
         }
         
@@ -150,6 +150,7 @@ open class BaseCoordinator {
         finishedValue = value
         transition.delegate = nil
         transition.coordinator = nil
+        transitions.removeAll()
         childControllers.removeAll()
         childCoordinators.removeAll()
         
