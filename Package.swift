@@ -7,9 +7,7 @@ let package = Package(
     name: "Flowie",
     platforms: [.iOS(.v18)],
     products: [
-        .library(
-            name: "Flowie",
-            targets: ["Flowie"]),
+        .library(name: "Flowie", targets: ["Flowie"]),
     ],
     targets: [
         .target(
