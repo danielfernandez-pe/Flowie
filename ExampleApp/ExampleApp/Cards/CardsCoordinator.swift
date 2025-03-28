@@ -9,7 +9,13 @@ import Flowie
 import UIKit
 import class SwiftUI.UIHostingController
 
+protocol CardsExternalRouting: AnyObject {
+    func needAuthorization(currentTransition: some Transition, completion: @escaping (Bool) -> Void)
+}
+
 final class CardsCoordinator: BaseCoordinator {
+    weak var externalRouter: CardsExternalRouting?
+    
     override func start() {
         let cardsController = SwiftUI.UIHostingController(rootView: CardsView(coordinator: self))
         open(controller: cardsController, with: transition)
@@ -21,13 +27,7 @@ final class CardsCoordinator: BaseCoordinator {
     }
     
     func startChangePinFlow() {
-        let presentTransition = PresentTransition(presentingViewController: transition.rootViewController)
-        let securityCoordinator = SecurityCoordinator(transition: presentTransition)
-        open(coordinator: securityCoordinator)
-        
-        securityCoordinator.finishedWithValue = { [weak self] value in
-            guard let authorized = value as? Bool else { return }
-            
+        externalRouter?.needAuthorization(currentTransition: transition) { [weak self] authorized in
             if authorized {
                 let presentTransition = PresentTransition(presentingViewController: self!.transition.rootViewController)
                 self?.open(coordinator: ChangePinCoordinator(transition: presentTransition))

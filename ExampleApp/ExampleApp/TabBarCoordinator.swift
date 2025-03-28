@@ -6,7 +6,8 @@
 //
 
 import Flowie
-import SwiftUI
+import UIKit
+import class SwiftUI.UIHostingController
 
 final class TabBarCoordinator: BaseCoordinator {
     override var isRootCoordinator: Bool { true }
@@ -32,6 +33,7 @@ final class TabBarCoordinator: BaseCoordinator {
         cardsNavController.tabBarItem = UITabBarItem(title: "Cards", image: UIImage(systemName: "creditcard.fill"), tag: 1)
         let cardsTransition = PushTransition(navigationController: cardsNavController)
         let cardsCoordinator = CardsCoordinator(transition: cardsTransition)
+        cardsCoordinator.externalRouter = self
         
         open(coordinator: homeCoordinator)
         open(coordinator: cardsCoordinator)
@@ -40,5 +42,19 @@ final class TabBarCoordinator: BaseCoordinator {
             homeNavController,
             cardsNavController
         ]
+    }
+}
+
+extension TabBarCoordinator: CardsExternalRouting {
+    func needAuthorization(currentTransition: some Transition, completion: @escaping (Bool) -> Void) {
+        let presentTransition = PresentTransition(presentingViewController: currentTransition.rootViewController)
+        let securityCoordinator = SecurityCoordinator(transition: presentTransition)
+        open(coordinator: securityCoordinator)
+        
+        securityCoordinator.finishedWithValue = { value in
+            guard let authorized = value as? Bool else { return }
+            
+            completion(authorized)
+        }
     }
 }
