@@ -16,26 +16,26 @@ import UIKit
 ///     you need to also use .navigationBarBackButtonHidden() in the view.
 ///     **
 ///
-struct PushParameters {
+public struct PushParameters {
     let isBackHidden: Bool
     
-    init(isBackHidden: Bool) {
+    public init(isBackHidden: Bool) {
         self.isBackHidden = isBackHidden
     }
 }
 
 @MainActor
-final class PushTransition: NSObject, Transition {
-    var rootViewController: UIViewController {
+public final class PushTransition: NSObject, Transition {
+    public var rootViewController: UIViewController {
         navigationController.topViewController?.lastPresentedViewController ?? navigationController
     }
     
-    weak var delegate: TransitionDelegate?
-    weak var coordinator: BaseCoordinator?
-    let navigationController: UINavigationController
+    public weak var delegate: TransitionDelegate?
+    public weak var coordinator: BaseCoordinator?
+    public let navigationController: UINavigationController
     private let parameters: PushParameters?
 
-    init(navigationController: UINavigationController, parameters: PushParameters? = nil) {
+    public init(navigationController: UINavigationController, parameters: PushParameters? = nil) {
         self.navigationController = navigationController
         self.parameters = parameters
         super.init()
@@ -46,7 +46,7 @@ final class PushTransition: NSObject, Transition {
         print("\(Self.self) got deinit")
     }
     
-    func open(_ controller: UIViewController) {
+    public func open(_ controller: UIViewController) {
         if let parameters {
             controller.navigationItem.hidesBackButton = parameters.isBackHidden
             (navigationController as? BaseNavigationController)?.disableGesture = parameters.isBackHidden
@@ -55,33 +55,33 @@ final class PushTransition: NSObject, Transition {
         navigationController.pushViewController(controller, animated: true)
     }
 
-    func dismiss(completion: (() -> Void)?) {
+    public func dismiss(completion: (() -> Void)?) {
         navigationController.dismiss(animated: true) {
             completion?()
         }
     }
 
-    func pop() {
+    public func pop() {
         navigationController.popViewController(animated: true)
     }
     
-    func popToRoot() {
+    public func popToRoot() {
         navigationController.popToRootViewController(animated: true)
     }
     
-    func pop(to controller: UIViewController, completion: (() -> Void)?) {
+    public func pop(to controller: UIViewController, completion: (() -> Void)?) {
         navigationController.popToViewController(controller, animated: true) {
             completion?()
         }
     }
     
-    func reassignNavigationDelegate() {
+    public func reassignNavigationDelegate() {
         navigationController.delegate = self
     }
 }
 
 extension PushTransition: UINavigationControllerDelegate {
-    func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
+    public func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
         guard let fromViewController = navigationController.transitionCoordinator?.viewController(forKey: .from) else { return }
         // is showing
         if navigationController.viewControllers.contains(fromViewController) {
