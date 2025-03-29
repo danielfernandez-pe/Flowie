@@ -7,12 +7,32 @@
 
 import UIKit
 
+public enum NavigationStyle {
+    case transparent
+    case `default`
+}
+
 public final class BaseNavigationController: UINavigationController {
+    let style: NavigationStyle
     var disableGesture = false
+    
+    public init(style: NavigationStyle = .default) {
+        self.style = style
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     func initAppearance() {
         let navigationBarAppearance = UINavigationBarAppearance()
-        navigationBarAppearance.configureWithDefaultBackground()
+        switch style {
+        case .default:
+            navigationBarAppearance.configureWithDefaultBackground()
+        case .transparent:
+            navigationBarAppearance.configureWithTransparentBackground()
+        }
 
         // Apply appearance to all navigation bar states
         navigationBar.standardAppearance = navigationBarAppearance
