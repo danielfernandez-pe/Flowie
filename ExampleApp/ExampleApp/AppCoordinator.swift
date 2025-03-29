@@ -7,6 +7,15 @@
 
 import Flowie
 import UIKit
+import OSLog
+
+extension Logger: @retroactive FlowLogging {
+    static let exampleLogger = Logger(subsystem: Bundle.main.bundleIdentifier!, category: "flowLogger")
+    
+    public func log(_ message: String) {
+        debug("\(message)")
+    }
+}
 
 final class AppCoordinator: BaseCoordinator {
     override var isRootCoordinator: Bool { true }
@@ -16,6 +25,7 @@ final class AppCoordinator: BaseCoordinator {
     init(window: UIWindow) {
         self.window = window
         super.init()
+        Flowie.logging = Logger.exampleLogger
     }
     
     override func start() {

@@ -10,14 +10,11 @@ let package = Package(
         .library(name: "Flowie", targets: ["Flowie"]),
     ],
     dependencies: [
-        .package(url: "git@github.com:danielfernandez-pe/Logger.git", from: "1.2.1")
     ],
     targets: [
         .target(
             name: "Flowie",
-            dependencies: [
-                .product(name: "Lumberjack", package: "Logger"),
-            ],
+            dependencies: [],
             path: "Sources",
             swiftSettings: [
                 .enableExperimentalFeature("StrictConcurrency")

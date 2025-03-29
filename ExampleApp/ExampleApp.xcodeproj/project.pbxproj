@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4F5A73862D9719B1004DECD9 /* Flowie in Frameworks */ = {isa = PBXBuildFile; productRef = 4F5A73852D9719B1004DECD9 /* Flowie */; };
+		4FAACDB02D9835CF008847A9 /* Flowie in Frameworks */ = {isa = PBXBuildFile; productRef = 4FAACDAF2D9835CF008847A9 /* Flowie */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -40,7 +40,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4F5A73862D9719B1004DECD9 /* Flowie in Frameworks */,
+				4FAACDB02D9835CF008847A9 /* Flowie in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -83,7 +83,7 @@
 			);
 			name = ExampleApp;
 			packageProductDependencies = (
-				4F5A73852D9719B1004DECD9 /* Flowie */,
+				4FAACDAF2D9835CF008847A9 /* Flowie */,
 			);
 			productName = ExampleApp;
 			productReference = 4FCCD6362D9718A500AD8718 /* ExampleApp.app */;
@@ -114,7 +114,7 @@
 			mainGroup = 4FCCD62D2D9718A500AD8718;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				4F5A73842D9719B1004DECD9 /* XCLocalSwiftPackageReference "../../Flowie" */,
+				4FAACDAE2D9835CF008847A9 /* XCLocalSwiftPackageReference "../../Flowie" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 4FCCD6372D9718A500AD8718 /* Products */;
@@ -346,14 +346,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		4F5A73842D9719B1004DECD9 /* XCLocalSwiftPackageReference "../../Flowie" */ = {
+		4FAACDAE2D9835CF008847A9 /* XCLocalSwiftPackageReference "../../Flowie" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = ../../Flowie;
 		};
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		4F5A73852D9719B1004DECD9 /* Flowie */ = {
+		4FAACDAF2D9835CF008847A9 /* Flowie */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Flowie;
 		};

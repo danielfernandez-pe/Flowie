@@ -40,7 +40,7 @@ public final class PresentTransition: NSObject, Transition {
     }
     
     deinit {
-        logger?.debug("\(Self.self) got deinit")
+        logging?.log("Deinit \(Self.self)")
     }
 
     public func open(_ controller: UIViewController) {
