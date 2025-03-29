@@ -28,9 +28,10 @@ final class CardsCoordinator: BaseCoordinator {
     
     func startChangePinFlow() {
         externalRouter?.needAuthorization(currentTransition: transition) { [weak self] authorized in
+            guard let self else { return }
             if authorized {
-                let presentTransition = PresentTransition(presentingViewController: self!.transition.rootViewController)
-                self?.open(coordinator: ChangePinCoordinator(transition: presentTransition))
+                let presentTransition = PresentTransition(presentingViewController: transition.rootViewController)
+                open(coordinator: ChangePinCoordinator(transition: presentTransition))
             } else {
                 print("nothing happened because the user was not authorized")
             }

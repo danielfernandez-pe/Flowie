@@ -53,7 +53,6 @@ extension TabBarCoordinator: CardsExternalRouting {
         
         securityCoordinator.finishedWithValue = { value in
             guard let authorized = value as? Bool else { return }
-            
             completion(authorized)
         }
     }
