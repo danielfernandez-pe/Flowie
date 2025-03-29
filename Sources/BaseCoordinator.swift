@@ -207,9 +207,17 @@ open class BaseCoordinator {
             if isRootCoordinator {
                 /// since is a root coordinator it means that itself doesn't have child controllers so we need the last controller of the
                 /// child coordinator before the last one (which is been removed now).
+                /// This is the case when we have a TabBarCoordinator that will have multiple child coordinators always.
                 if let index = childCoordinators.firstIndex(where: { $0 === childCoordinator }),
-                   index - 1 < childCoordinators.count {
+                   index > 0, index - 1 < childCoordinators.count {
                     lastController = childCoordinators[index - 1].childControllers.last
+                } else {
+                    /// this is a root coordinator that is working with window and just changing between two coordinators when they finish
+                    /// E.g. AuthCoordinator and HomeCoordinator
+                    /// It will only have one childCoordinator all the time
+                    transitions.removeLast()
+                    completion()
+                    return
                 }
             } else {
                 /// if is not a root coordinator, we can just grab the last controller the coordinator has.
