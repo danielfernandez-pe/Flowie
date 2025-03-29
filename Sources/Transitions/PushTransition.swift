@@ -43,7 +43,7 @@ public final class PushTransition: NSObject, Transition {
     }
 
     deinit {
-        print("\(Self.self) got deinit")
+        logger?.debug("\(Self.self) got deinit")
     }
     
     public func open(_ controller: UIViewController) {

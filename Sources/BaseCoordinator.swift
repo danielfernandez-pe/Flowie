@@ -70,7 +70,7 @@ open class BaseCoordinator {
         if let transition = transition {
             self.transitions.append(transition)
         }
-        print("init \(Self.self) with memory \(Unmanaged.passUnretained(self).toOpaque())")
+        logger?.debug("Init \(Self.self) with memory \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
     ///
@@ -260,7 +260,7 @@ open class BaseCoordinator {
     }
     
     deinit {
-        print("deinit \(Self.self) with memory \(Unmanaged.passUnretained(self).toOpaque())")
+        logger?.debug("Deinit \(Self.self) with memory \(Unmanaged.passUnretained(self).toOpaque())")
     }
 }
 
