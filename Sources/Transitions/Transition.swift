@@ -38,12 +38,12 @@ public protocol Transition: AnyObject {
     func reassignNavigationDelegate()
 }
 
-extension Transition {
-    func dismiss(completion: (() -> Void)? = nil) {
-        dismiss(completion: completion)
+public extension Transition {
+    func dismiss() {
+        dismiss(completion: nil)
     }
     
-    func pop(to controller: UIViewController, completion: (() -> Void)? = nil) {
-        pop(to: controller, completion: completion)
+    func pop(to controller: UIViewController) {
+        pop(to: controller, completion: nil)
     }
 }
