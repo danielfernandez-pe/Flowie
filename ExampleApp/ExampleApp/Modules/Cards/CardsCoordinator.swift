@@ -11,19 +11,29 @@ import class SwiftUI.UIHostingController
 
 protocol CardsExternalRouting: AnyObject {
     func needAuthorization(currentTransition: some Transition, completion: @escaping (Bool) -> Void)
+    func openCreateInstallmentsCard(currentTransition: some Transition)
 }
 
 final class CardsCoordinator: BaseCoordinator {
     weak var externalRouter: CardsExternalRouting?
     
     override func start() {
-        let cardsController = SwiftUI.UIHostingController(rootView: CardsView(coordinator: self))
+        let cardsController = UIHostingController(rootView: CardsView(coordinator: self))
         open(controller: cardsController, with: transition)
     }
     
     func startAddCardFlow() {
         let presentTransition = PresentTransition(presentingViewController: transition.rootViewController)
-        open(coordinator: AddCardCoordinator(transition: presentTransition))
+        let coordinator = AddCardCoordinator(transition: presentTransition)
+        open(coordinator: coordinator)
+        
+        coordinator.finishedWithValue = { [weak self] value in
+            guard let result = value as? AddCardCoordinator.CoordinatorResult, let self else { return }
+            switch result {
+            case .openCreateInstallmentsCard:
+                externalRouter?.openCreateInstallmentsCard(currentTransition: transition)
+            }
+        }
     }
     
     func startChangePinFlow() {

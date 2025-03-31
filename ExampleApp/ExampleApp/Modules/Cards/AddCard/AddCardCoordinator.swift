@@ -10,8 +10,16 @@ import UIKit
 import class SwiftUI.UIHostingController
 
 final class AddCardCoordinator: BaseCoordinator {
+    enum CoordinatorResult {
+        case openCreateInstallmentsCard
+    }
+    
     override func start() {
-        let addCardController = SwiftUI.UIHostingController(rootView: AddCardView())
+        let addCardController = UIHostingController(rootView: AddCardView(coordinator: self))
         open(controller: addCardController, with: transition)
+    }
+    
+    func openCreateInstallmentsCard() {
+        finish(with: CoordinatorResult.openCreateInstallmentsCard)
     }
 }

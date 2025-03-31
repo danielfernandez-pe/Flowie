@@ -56,4 +56,10 @@ extension TabBarCoordinator: CardsExternalRouting {
             completion(authorized)
         }
     }
+    
+    func openCreateInstallmentsCard(currentTransition: some Transition) {
+        let presentTransition = PresentTransition(presentingViewController: currentTransition.rootViewController)
+        let installmentsCoordinator = CreateInstallmentsCardCoordinator(transition: presentTransition)
+        open(coordinator: installmentsCoordinator)
+    }
 }
