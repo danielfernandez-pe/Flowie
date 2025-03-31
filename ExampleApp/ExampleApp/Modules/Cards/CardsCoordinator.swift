@@ -37,6 +37,10 @@ final class CardsCoordinator: BaseCoordinator {
     }
     
     func startChangePinFlow() {
+        // basically I tried to present modally (I created my coordinator and present transition in the tab bar coordinator)
+        // and try to present in the current transition (WHICH IS STILL THE LAST PRESENT from AddCardView) and haven't got deallocated.
+        // and when I tried, that controller is not in the window hierarchy.
+//        Attempt to present <UINavigationController: 0x105020800> on <UINavigationController: 0x106043a00> (from <_TtGC7SwiftUI19UIHostingControllerV10ExampleApp11AddCardView_: 0x105829e00>) whose view is not in the window hierarchy.
         externalRouter?.needAuthorization(currentTransition: transition) { [weak self] authorized in
             guard let self else { return }
             if authorized {
