@@ -20,7 +20,6 @@ open class BaseCoordinator {
     
     public var transition: any Transition {
         guard let last = transitions.last else {
-            
             fatalError("Error in \(Self.self) where there should always be one transition in a coordinator")
         }
         return last
@@ -136,7 +135,7 @@ open class BaseCoordinator {
             }
         }
         
-        logging?.log("Opening coordinator \(type(of: coordinator)) from  \(type(of: self))")
+        logging?.log("Opening coordinator \(type(of: coordinator)) from \(type(of: self))")
         
         childCoordinators.append(coordinator)
         
