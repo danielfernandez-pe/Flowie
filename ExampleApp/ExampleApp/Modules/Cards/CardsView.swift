@@ -20,7 +20,7 @@ struct CardsView: View {
                 coordinator.startChangePinFlow()
             }
             
-            Button("Push") {
+            Button("Change pin (push)") {
                 coordinator.pushNewFlow()
             }
         }

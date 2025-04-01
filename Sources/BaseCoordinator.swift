@@ -142,7 +142,14 @@ open class BaseCoordinator {
         if !isRootCoordinator {
             /// There can be edge cases where the user taps a button to fast and it tries to present a coordinator, but the current transition is in the process of been dismiss.
             /// If that's the case, we just return so we don't have zombie coordinators.
-            if transition.isDismissing {
+            
+            var parentCoordinatorTransitionIsDismissing = false
+            
+            if parentCoordinator?.transitions.isEmpty == false {
+                parentCoordinatorTransitionIsDismissing = parentCoordinator?.transition.isDismissing ?? false
+            }
+            
+            if transition.isDismissing || parentCoordinatorTransitionIsDismissing {
                 logging?.log("Opening coordinator \(type(of: coordinator)) from \(type(of: self)) but the last transition \(type(of: transition)) has a dismissing state of \(transition.isDismissing)")
                 logging?.log("Failed to open the coordinator")
                 return
