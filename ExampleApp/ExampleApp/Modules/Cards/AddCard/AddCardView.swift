@@ -17,6 +17,10 @@ struct AddCardView: View {
             Button("Create an installments card") {
                 coordinator.openCreateInstallmentsCard()
             }
+            
+            Button("Finish") {
+                coordinator.finishTheFlow()
+            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.orange)

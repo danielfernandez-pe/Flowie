@@ -19,6 +19,10 @@ struct CardsView: View {
             Button("Change pin") {
                 coordinator.startChangePinFlow()
             }
+            
+            Button("Push") {
+                coordinator.pushNewFlow()
+            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.cyan)

@@ -35,29 +35,41 @@ final class TabBarCoordinator: BaseCoordinator {
         let cardsCoordinator = CardsCoordinator(transition: cardsTransition)
         cardsCoordinator.externalRouter = self
         
-        open(coordinator: homeCoordinator)
         open(coordinator: cardsCoordinator)
+        open(coordinator: homeCoordinator)
 
         tabBarController.viewControllers = [
-            homeNavController,
-            cardsNavController
+            cardsNavController,
+            homeNavController
         ]
     }
 }
 
 extension TabBarCoordinator: CardsExternalRouting {
-    func needAuthorization(currentTransition: some Transition, completion: @escaping (Bool) -> Void) {
+    func needAuthorization(_ coordinator: BaseCoordinator, currentTransition: some Transition, completion: @escaping (Bool) -> Void) {
         let presentTransition = PresentTransition(presentingViewController: currentTransition.rootViewController)
         let securityCoordinator = SecurityCoordinator(transition: presentTransition)
         open(coordinator: securityCoordinator)
         
-        securityCoordinator.finishedWithValue = { value in
+        securityCoordinator.finished = { value in
             guard let authorized = value as? Bool else { return }
             completion(authorized)
         }
     }
     
-    func openCreateInstallmentsCard(currentTransition: some Transition) {
+    func needAuthorizationPushFlow(_ coordinator: BaseCoordinator, currentTransition: some Transition, completion: @escaping (Bool) -> Void) {
+        let pushTransition = PushTransition(navigationController: currentTransition.navigationController)
+        let securityCoordinator = SecurityCoordinator(transition: pushTransition)
+        securityCoordinator.sourceCoordinator = coordinator
+        open(coordinator: securityCoordinator)
+        
+        securityCoordinator.finished = { value in
+            guard let authorized = value as? Bool else { return }
+            completion(authorized)
+        }
+    }
+    
+    func openCreateInstallmentsCard(_ coordinator: BaseCoordinator, currentTransition: some Transition) {
         let presentTransition = PresentTransition(presentingViewController: currentTransition.rootViewController)
         let installmentsCoordinator = CreateInstallmentsCardCoordinator(transition: presentTransition)
         open(coordinator: installmentsCoordinator)

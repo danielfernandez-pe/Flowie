@@ -37,6 +37,16 @@ open class BaseCoordinator {
     
     public weak var parentCoordinator: BaseCoordinator?
     
+    /// This property indicates the coordinator that started the creation of the the new coordinator. Is not necessarilly the parent.
+    ///
+    /// E.g.
+    /// HomeCoordinator wants to open a coordinator from a module that it doesn't know.
+    /// It will tell to his parent (in this case a tabBarCoordinator) to open the new coordinator for him.
+    /// We set the source Coordinator as Home since at some point if we want to go back, tabBar needs to know who opened the new coordinator.
+    /// We will use this property in removeControllers when the coordinator is finishing. In case of a PushTransition I need to pop back to the last controller
+    /// which will be the last controller of the sourceCoordinator.
+    public weak var sourceCoordinator: BaseCoordinator?
+    
     ///
     /// View controllers managed within the current coordinator's flow.
     ///
@@ -220,10 +230,10 @@ open class BaseCoordinator {
                 /// since is a root coordinator it means that itself doesn't have child controllers so we need the last controller of the
                 /// child coordinator before the last one (which is been removed now).
                 /// This is the case when we have a TabBarCoordinator that will have multiple child coordinators always.
-                if let index = childCoordinators.firstIndex(where: { $0 === childCoordinator }),
-                   index > 0, index - 1 < childCoordinators.count {
-                    lastController = childCoordinators[index - 1].childControllers.last
+                if let sourceCoordinator = childCoordinator.sourceCoordinator {
+                    lastController = sourceCoordinator.childControllers.last
                 } else {
+                    logging?.log("Deleting last transition of RootCoordinator. If you expected some transition to happen check if you set sourceCoordinator for the child coordinator that is been dismiss.")
                     /// this is a root coordinator that is working with window and just changing between two coordinators when they finish
                     /// E.g. AuthCoordinator and HomeCoordinator
                     /// It will only have one childCoordinator all the time

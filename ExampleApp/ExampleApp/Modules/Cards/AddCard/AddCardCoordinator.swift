@@ -22,4 +22,8 @@ final class AddCardCoordinator: BaseCoordinator {
     func openCreateInstallmentsCard() {
         finish(with: CoordinatorResult.openCreateInstallmentsCard)
     }
+    
+    func finishTheFlow() {
+        finish()
+    }
 }
