@@ -14,7 +14,9 @@ open class BaseCoordinator {
     /// This property is used to determine if the coordinator is the root coordinator.
     /// It means it only manages coordinators and not view controllers.
     ///
-    /// E.g., the `AppCoordinator` is a root coordinator because it manages the navigation flow of the app.
+    /// E.g.
+    /// - `AppCoordinator` is a root coordinator because it manages the navigation flow of the app.
+    /// - `TabBarCoordinator` is a root coordinator because it mainly manages only tab item coordinators.
     ///
     open var isRootCoordinator: Bool { return false }
     
@@ -31,7 +33,7 @@ open class BaseCoordinator {
     ///
     /// Working with generics imply making multiple changes to transition, transitionDelegate, etc.
     ///
-    public var finishedWithValue: ((Any) -> Void)?
+    public var finished: ((Any?) -> Void)?
     
     public weak var parentCoordinator: BaseCoordinator?
     
@@ -64,7 +66,7 @@ open class BaseCoordinator {
     private var transitions: [any Transition] = []
     
     ///
-    /// This property need to have a value in order to call finishedWithValue closure.
+    /// We will send this property in the finished closure
     ///
     private var finishedValue: Any?
     
@@ -128,6 +130,8 @@ open class BaseCoordinator {
     ///
     public func open(coordinator: BaseCoordinator) {
         if !isRootCoordinator {
+            /// There can be edge cases where the user taps a button to fast and it tries to present a coordinator, but the current transition is in the process of been dismiss.
+            /// If that's the case, we just return so we don't have zombie coordinators.
             if transition.isDismissing {
                 logging?.log("Opening coordinator \(type(of: coordinator)) from \(type(of: self)) but the last transition \(type(of: transition)) has a dismissing state of \(transition.isDismissing)")
                 logging?.log("Failed to open the coordinator")
@@ -180,15 +184,11 @@ open class BaseCoordinator {
     /// This method will be called automatically whenever the coordinator finishes.
     ///
     private func coordinatorDidFinish() {
-        if let finishedValue {
-            finishedWithValue?(finishedValue)
-        }
+        finished?(finishedValue)
     }
     
     ///
     /// The parent coordinator is cleaning up the view controllers and transitions of a child coordinator when finishes.
-    ///
-    /// - If this parent coordinator is the root coordinator, we only need to remove the last transition.
     ///
     /// - If the last transition in the parent coordinator is a `PushTransition`.
     ///
@@ -295,8 +295,8 @@ extension BaseCoordinator: TransitionDelegate {
                                  controller: UIViewController,
                                  navigationController: UINavigationController,
                                  coordinator: BaseCoordinator) {
-        /// we clean the coordinator a bit. Remove the last transition, reassign the navigation of the new current
-        /// and remove controller from the list of child controllers
+        /// we clean the coordinator a bit. First, we remove the last transition
+        /// then we remove controller from the list of child controllers
         coordinator.transitions.removeLast()
         coordinator.childControllers.removeAll(where: { $0 === controller })
         
@@ -309,7 +309,7 @@ extension BaseCoordinator: TransitionDelegate {
             
             notifyThatCoordinatorFinished()
         } else {
-            /// it the coordinator still have child controllers to manage, then we reassign the delegate to the current transition.
+            /// it the coordinator still have child controllers to manage, then we reassign the navigation delegate to the current transition.
             coordinator.transition.reassignNavigationDelegate()
         }
     }
