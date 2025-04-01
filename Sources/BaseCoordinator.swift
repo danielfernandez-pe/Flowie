@@ -215,7 +215,7 @@ open class BaseCoordinator {
     private func removeControllers(from childCoordinator: BaseCoordinator,
                                    didChildPresentedController: Bool,
                                    completion: @escaping () -> Void) {
-        if transition is PushTransition {
+        if let pushTransition = transition as? PushTransition {
             var lastController: UIViewController?
             if isRootCoordinator {
                 /// since is a root coordinator it means that itself doesn't have child controllers so we need the last controller of the
@@ -238,26 +238,26 @@ open class BaseCoordinator {
             }
 
             if let lastController {
-                transition.delegate = nil
+                pushTransition.delegate = nil
                 
                 if didChildPresentedController {
-                    transition.dismiss {
-                        self.transition.pop(to: lastController)
+                    pushTransition.dismiss {
+                        pushTransition.pop(to: lastController, completion: nil)
                         self.transitions.removeLast()
                         self.transition.reassignNavigationDelegate()
                         completion()
                     }
                 } else {
-                    transition.pop(to: lastController) {
+                    pushTransition.pop(to: lastController) {
                         self.transitions.removeLast()
                         self.transition.reassignNavigationDelegate()
                         completion()
                     }
                 }
             }
-        } else if transition is PresentTransition {
+        } else if let presentTransition = transition as? PresentTransition {
             transition.delegate = nil
-            transition.dismiss() {
+            presentTransition.close {
                 self.transitions.removeLast()
                 /// we don't need to reassign the delegate, because the last transition was a presentation and that had it's own navigation controller
                 completion()

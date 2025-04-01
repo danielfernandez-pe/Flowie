@@ -50,27 +50,14 @@ public final class PresentTransition: NSObject, Transition {
         presentingViewController.present(navigationController, animated: true)
     }
 
-    public func dismiss(completion: (() -> Void)?) {
+    public func close(completion: (() -> Void)?) {
+        isDismissing = true
         presentingViewController.dismiss(animated: true) { [weak self] in
             completion?()
             guard let self else { return }
             if let coordinator {
                 delegate?.transitionDidDismiss(self, navigationController: navigationController, coordinator: coordinator)
             }
-        }
-    }
-
-    public func pop() {
-        navigationController.popViewController(animated: true)
-    }
-    
-    public func popToRoot() {
-        navigationController.popToRootViewController(animated: true)
-    }
-    
-    public func pop(to controller: UIViewController, completion: (() -> Void)?) {
-        navigationController.popToViewController(controller, animated: true) {
-            completion?()
         }
     }
     

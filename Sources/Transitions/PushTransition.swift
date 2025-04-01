@@ -57,12 +57,16 @@ public final class PushTransition: NSObject, Transition {
         navigationController.pushViewController(controller, animated: true)
     }
 
+    public func close(completion: (() -> Void)?) {
+        navigationController.popViewController(animated: true)
+    }
+    
     public func dismiss(completion: (() -> Void)?) {
         navigationController.dismiss(animated: true) {
             completion?()
         }
     }
-
+    
     public func pop() {
         navigationController.popViewController(animated: true)
     }

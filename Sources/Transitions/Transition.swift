@@ -32,19 +32,12 @@ public protocol Transition: AnyObject {
     var navigationController: UINavigationController { get }
     
     func open(_ controller: UIViewController)
-    func pop()
-    func popToRoot()
-    func pop(to controller: UIViewController, completion: (() -> Void)?)
-    func dismiss(completion: (() -> Void)?)
+    func close(completion: (() -> Void)?)
     func reassignNavigationDelegate()
 }
 
 public extension Transition {
-    func dismiss() {
-        dismiss(completion: nil)
-    }
-    
-    func pop(to controller: UIViewController) {
-        pop(to: controller, completion: nil)
+    func close() {
+        close(completion: nil)
     }
 }
