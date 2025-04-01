@@ -38,7 +38,6 @@ public final class PresentTransition: NSObject, Transition {
         self.parameters = parameters
         super.init()
         navigationController.presentationController?.delegate = self
-        navigationController.delegate = self
     }
     
     deinit {
@@ -62,7 +61,6 @@ public final class PresentTransition: NSObject, Transition {
     }
     
     public func reassignNavigationDelegate() {
-        navigationController.delegate = self
     }
 }
 
@@ -83,28 +81,5 @@ extension PresentTransition: UIAdaptivePresentationControllerDelegate {
         }
         
         return .formSheet
-    }
-}
-
-extension PresentTransition: UINavigationControllerDelegate {
-    public func navigationController(_ navigationController: UINavigationController, didShow viewController: UIViewController, animated: Bool) {
-        guard let fromViewController = navigationController.transitionCoordinator?.viewController(forKey: .from) else { return }
-        
-        // is showing
-        if navigationController.viewControllers.contains(fromViewController) {
-            return
-        }
-        
-        // is popping
-        if let coordinator {
-            if navigationController.viewControllers.count == 1 {
-                delegate?.transitionDidPopToRoot(self, navigationController: navigationController, coordinator: coordinator)
-            } else {
-                delegate?.transitionDidPop(self,
-                                           controller: fromViewController,
-                                           navigationController: navigationController,
-                                           coordinator: coordinator)
-            }
-        }
     }
 }

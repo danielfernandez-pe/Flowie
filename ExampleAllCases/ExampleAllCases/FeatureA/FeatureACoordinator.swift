@@ -39,7 +39,7 @@ final class FeatureACoordinator: BaseCoordinator {
     private func openFeatureBCoordinator(transition: Transition) {
         let coordinator = FeatureBCoordinator(transition: transition)
         
-        coordinator.finishedWithValue = { [weak self] value in
+        coordinator.finished = { [weak self] _ in
             guard let self else { return }
             let presentTransition = PresentTransition(presentingViewController: self.transition.rootViewController)
             self.openFeatureB(transition: presentTransition)
