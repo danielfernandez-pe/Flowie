@@ -30,6 +30,8 @@ public final class PresentTransition: NSObject, Transition {
     public let navigationController = UINavigationController()
     private let presentingViewController: UIViewController
     private let parameters: PresentParameters?
+    
+    public var isDismissing: Bool = false
 
     public init(presentingViewController: UIViewController, parameters: PresentParameters? = nil) {
         self.presentingViewController = presentingViewController
@@ -78,6 +80,10 @@ public final class PresentTransition: NSObject, Transition {
 }
 
 extension PresentTransition: UIAdaptivePresentationControllerDelegate {
+    public func presentationControllerWillDismiss(_ presentationController: UIPresentationController) {
+        isDismissing = true
+    }
+    
     public func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
         if let coordinator {
             delegate?.transitionDidDismiss(self, navigationController: navigationController, coordinator: coordinator)

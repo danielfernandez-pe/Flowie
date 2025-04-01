@@ -34,6 +34,8 @@ public final class PushTransition: NSObject, Transition {
     public weak var coordinator: BaseCoordinator?
     public let navigationController: UINavigationController
     private let parameters: PushParameters?
+    
+    public var isDismissing: Bool = false
 
     public init(navigationController: UINavigationController, parameters: PushParameters? = nil) {
         self.navigationController = navigationController

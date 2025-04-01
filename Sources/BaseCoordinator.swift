@@ -19,7 +19,10 @@ open class BaseCoordinator {
     open var isRootCoordinator: Bool { return false }
     
     public var transition: any Transition {
-        guard let last = transitions.last else { fatalError("There should always be one transition in a coordinator") }
+        guard let last = transitions.last else {
+            
+            fatalError("Error in \(Self.self) where there should always be one transition in a coordinator")
+        }
         return last
     }
     
@@ -125,6 +128,16 @@ open class BaseCoordinator {
     /// - Parameter coordinator: The child coordinator to be started.
     ///
     public func open(coordinator: BaseCoordinator) {
+        if !isRootCoordinator {
+            if transition.isDismissing {
+                logging?.log("Opening coordinator \(type(of: coordinator)) from \(type(of: self)) but the last transition \(type(of: transition)) has a dismissing state of \(transition.isDismissing)")
+                logging?.log("Failed to open the coordinator")
+                return
+            }
+        }
+        
+        logging?.log("Opening coordinator \(type(of: coordinator)) from  \(type(of: self))")
+        
         childCoordinators.append(coordinator)
         
         if !transitions.contains(where: { $0 === coordinator.transition }), !coordinator.isRootCoordinator {

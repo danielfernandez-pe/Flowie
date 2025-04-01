@@ -26,6 +26,7 @@ public protocol TransitionDelegate: AnyObject {
 public protocol Transition: AnyObject {
     var delegate: TransitionDelegate? { get set }
     var coordinator: BaseCoordinator? { get set }
+    var isDismissing: Bool { get set }
     
     var rootViewController: UIViewController { get }
     var navigationController: UINavigationController { get }
