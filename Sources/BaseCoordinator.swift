@@ -41,7 +41,7 @@ open class BaseCoordinator {
     ///
     /// E.g.
     /// HomeCoordinator wants to open a coordinator from a module that it doesn't know.
-    /// It will tell to his parent (in this case a tabBarCoordinator) to open the new coordinator for him.
+    /// It will tell to his parent (in this case a TabBarCoordinator) to open the new coordinator for him.
     /// We set the source Coordinator as Home since at some point if we want to go back, tabBar needs to know who opened the new coordinator.
     /// We will use this property in removeControllers when the coordinator is finishing. In case of a PushTransition I need to pop back to the last controller
     /// which will be the last controller of the sourceCoordinator.
@@ -231,28 +231,36 @@ open class BaseCoordinator {
     private func removeControllers(from childCoordinator: BaseCoordinator,
                                    didChildPresentedController: Bool,
                                    completion: @escaping () -> Void) {
+        if isRootCoordinator, sourceCoordinator == nil {
+            logging?.log("Deleting child coordinator of a RootCoordinator. If you expected some transition to happen check if you set sourceCoordinator for the child coordinator that is been dismiss.")
+            /// this is a root coordinator that is working with window and just changing between two coordinators when they finish
+            /// E.g. AuthCoordinator and HomeCoordinator
+            /// It will only have one childCoordinator all the time
+            completion()
+            return
+        }
+        
         if let pushTransition = transition as? PushTransition {
             var lastController: UIViewController?
             if isRootCoordinator {
-                /// since is a root coordinator it means that itself doesn't have child controllers so we need the last controller of the
-                /// child coordinator before the last one (which is been removed now).
-                /// This is the case when we have a TabBarCoordinator that will have multiple child coordinators always.
+                /// since is a root coordinator it means that itself doesn't have child controllers so we need the last controller of the sourceCoordinator that
+                /// should have been setup as some child coordinator of the tabBar (where this is coming from).
+                ///
+                /// E.g. TabBar has 2 coordinators. Home and Profile. Profile want's to open a new module, so it tells TabBar to do it, but it put the
+                /// source coordinator of this new module as Profile. So then, when tab Bar finishes the new module, it know it came from Profile
+                ///
                 if let sourceCoordinator = childCoordinator.sourceCoordinator {
                     lastController = sourceCoordinator.childControllers.last
-                } else {
-                    logging?.log("Deleting last transition of RootCoordinator. If you expected some transition to happen check if you set sourceCoordinator for the child coordinator that is been dismiss.")
-                    /// this is a root coordinator that is working with window and just changing between two coordinators when they finish
-                    /// E.g. AuthCoordinator and HomeCoordinator
-                    /// It will only have one childCoordinator all the time
-                    transitions.removeLast()
-                    completion()
-                    return
                 }
             } else {
                 /// if is not a root coordinator, we can just grab the last controller the coordinator has.
                 lastController = childControllers.last
             }
 
+            if lastController == nil {
+                fatalError("We don't have a last controller to go back to. This should never happened.")
+            }
+            
             if let lastController {
                 pushTransition.delegate = nil
                 
