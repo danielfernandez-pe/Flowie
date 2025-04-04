@@ -160,7 +160,7 @@ open class BaseCoordinator {
         
         childCoordinators.append(coordinator)
         
-        if !transitions.contains(where: { $0 === coordinator.transition }), !coordinator.isRootCoordinator {
+        if !isRootCoordinator, !transitions.contains(where: { $0 === coordinator.transition }) {
             transitions.append(coordinator.transition)
         }
         
@@ -180,10 +180,16 @@ open class BaseCoordinator {
     /// Call this method when the coordinator should be fully cleaned up and deallocated.
     ///
     public func finish(with value: Any? = nil) {
+        /// only non root coordinators will have transitions
+        if !isRootCoordinator {
+            /// we check if we didn't delete the transitions previously (e.g. user pressing multiple times a button to finish the coordinator)
+            guard !transitions.isEmpty else { return }
+            transition.delegate = nil
+            transition.coordinator = nil
+            transitions.removeAll()
+        }
+        
         finishedValue = value
-        transition.delegate = nil
-        transition.coordinator = nil
-        transitions.removeAll()
         childControllers.removeAll()
         childCoordinators.removeAll()
         
@@ -234,7 +240,7 @@ open class BaseCoordinator {
         if isRootCoordinator, sourceCoordinator == nil {
             logging?.log("Deleting child coordinator of a RootCoordinator. If you expected some transition to happen check if you set sourceCoordinator for the child coordinator that is been dismiss.")
             /// this is a root coordinator that is working with window and just changing between two coordinators when they finish
-            /// E.g. AuthCoordinator and HomeCoordinator
+            /// E.g. AppCoordinator has AuthCoordinator and HomeCoordinator
             /// It will only have one childCoordinator all the time
             completion()
             return
