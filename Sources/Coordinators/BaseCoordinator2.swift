@@ -8,6 +8,7 @@
 import UIKit
 
 open class BaseCoordinator2: UICoordinator {
+    public var id: UUID = UUID()
     public var transition: any Transition {
         guard let last = transitions.last else {
             fatalError("Error in \(Self.self) where there should always be one transition in a coordinator")
@@ -102,7 +103,6 @@ open class BaseCoordinator2: UICoordinator {
         if let pushTransition = transition as? PushTransition {
             guard let lastController = childControllers.last else {
                 fatalError("Coordinator \(Self.self) should always have at least one child controller when child coordinator is been removed")
-                return
             }
             
             pushTransition.delegate = nil
@@ -169,7 +169,7 @@ extension BaseCoordinator2: TransitionDelegate {
             }
             
             if let parent = uiCoordinator.parentCoordinator as? BaseRootCoordinator {
-                parent.lastChildTransition = nil
+                parent.lastChildTransitions[uiCoordinator.id] = nil
             }
 
             notifyThatCoordinatorFinished()
@@ -210,7 +210,7 @@ extension BaseCoordinator2: TransitionDelegate {
             }
             
             if let parent = uiCoordinator.parentCoordinator as? BaseRootCoordinator {
-                parent.lastChildTransition = nil
+                parent.lastChildTransitions[uiCoordinator.id] = nil
             }
             
             notifyThatCoordinatorFinished()
@@ -239,7 +239,7 @@ extension BaseCoordinator2: TransitionDelegate {
             }
             
             if let parent = coordinator.parentCoordinator as? BaseRootCoordinator {
-                parent.lastChildTransition = nil
+                parent.lastChildTransitions[uiCoordinator.id] = nil
             }
             
             notifyThatCoordinatorFinished()

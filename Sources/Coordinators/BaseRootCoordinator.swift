@@ -8,11 +8,12 @@
 import UIKit
 
 open class BaseRootCoordinator: Coordinator {
+    public var id: UUID = UUID()
     public var finishedValue: Any?
     public var finished: ((Any?) -> Void)?
     public var parentCoordinator: (any Coordinator)?
     public var childCoordinators: [any Coordinator] = []
-    public var lastChildTransition: (any Transition)?
+    var lastChildTransitions: [UUID: (any Transition)] = [:]
     
     public init() {}
     
@@ -22,7 +23,7 @@ open class BaseRootCoordinator: Coordinator {
     
     public func open(coordinator: some Coordinator) {
         if let uiCoordinator = coordinator as? UICoordinator {
-            lastChildTransition = uiCoordinator.transition
+            lastChildTransitions[coordinator.id] = uiCoordinator.transition
         }
         
         logging?.log("Opening coordinator \(type(of: coordinator)) from \(type(of: self))")
@@ -45,7 +46,8 @@ open class BaseRootCoordinator: Coordinator {
     }
     
     public func removeControllers(from childCoordinator: some Coordinator, didChildPresentedController: Bool, completion: @escaping () -> Void) {
-        guard let childCoordinator = childCoordinator as? UICoordinator else {
+        guard let childCoordinator = childCoordinator as? UICoordinator,
+            let lastChildTransition = lastChildTransitions[childCoordinator.id] else {
             completion()
             return
         }
@@ -66,19 +68,19 @@ open class BaseRootCoordinator: Coordinator {
             if didChildPresentedController {
                 pushTransition.dismiss {
                     pushTransition.pop(to: lastController, completion: nil)
-                    self.lastChildTransition = nil
+                    self.lastChildTransitions[childCoordinator.id] = nil
                     completion()
                 }
             } else {
                 pushTransition.pop(to: lastController) {
-                    self.lastChildTransition = nil
+                    self.lastChildTransitions[childCoordinator.id] = nil
                     completion()
                 }
             }
         } else if let presentTransition = lastChildTransition as? PresentTransition {
             presentTransition.delegate = nil
             presentTransition.close {
-                self.lastChildTransition = nil
+                self.lastChildTransitions[childCoordinator.id] = nil
                 /// we don't need to reassign the delegate, because the last transition was a presentation and that had it's own navigation controller
                 completion()
             }

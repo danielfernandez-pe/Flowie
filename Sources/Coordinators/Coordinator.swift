@@ -9,6 +9,7 @@ import UIKit
 
 @MainActor
 public protocol Coordinator: AnyObject {
+    var id: UUID { get }
     var finishedValue: Any? { get set }
     var finished: ((Any?) -> Void)? { get set }
     var parentCoordinator: (any Coordinator)? { get set }
