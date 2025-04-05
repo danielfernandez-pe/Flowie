@@ -7,8 +7,9 @@
 
 import UIKit
 
-open class BaseCoordinator2: UICoordinator {
+open class BaseCoordinator: UICoordinator {
     public var id: UUID = UUID()
+    
     public var transition: any Transition {
         guard let last = transitions.last else {
             fatalError("Error in \(Self.self) where there should always be one transition in a coordinator")
@@ -50,16 +51,18 @@ open class BaseCoordinator2: UICoordinator {
     }
     
     public func open(coordinator: some Coordinator) {
+        /// Usually UICoordinators only open other UICoordinators
         guard let uiCoordinator = coordinator as? UICoordinator else {
             return
         }
         
         var parentCoordinatorTransitionIsDismissing = false
-        
+
         if let parent = parentCoordinator as? UICoordinator {
             parentCoordinatorTransitionIsDismissing = parent.transition.isDismissing
         }
         
+        /// We need to check if either this coordinator or it's parent might be in the middle of a dismissing transition
         if transition.isDismissing || parentCoordinatorTransitionIsDismissing {
             logging?.log("Opening coordinator \(type(of: coordinator)) from \(type(of: self)) but the last transition \(type(of: transition)) has a dismissing state of \(transition.isDismissing)")
             logging?.log("Failed to open the coordinator")
@@ -100,17 +103,21 @@ open class BaseCoordinator2: UICoordinator {
     }
     
     public func removeControllers(from childCoordinator: some Coordinator, didChildPresentedController: Bool, completion: @escaping () -> Void) {
+        /// I need to check what was the type of the last transition
         if let pushTransition = transition as? PushTransition {
             guard let lastController = childControllers.last else {
                 fatalError("Coordinator \(Self.self) should always have at least one child controller when child coordinator is been removed")
             }
             
+            /// I don't want the transition delegate to run again the removal logic
             pushTransition.delegate = nil
             
             if didChildPresentedController {
                 pushTransition.dismiss {
                     pushTransition.pop(to: lastController, completion: nil)
+                    /// Once I went back to the last controller I can remove the last transition of the father.
                     self.transitions.removeLast()
+                    /// I need to reassign the delegate of the navigation to the current transition
                     self.transition.reassignNavigationDelegate()
                     completion()
                 }
@@ -122,10 +129,11 @@ open class BaseCoordinator2: UICoordinator {
                 }
             }
         } else if let presentTransition = transition as? PresentTransition {
+            /// If it's a presentation transition, again I remove the delegate so it doesn't run the removal logic
             transition.delegate = nil
             presentTransition.close {
-                self.transitions.removeLast()
                 /// we don't need to reassign the delegate, because the last transition was a presentation and that had it's own navigation controller
+                self.transitions.removeLast()
                 completion()
             }
         } else {
@@ -150,12 +158,12 @@ open class BaseCoordinator2: UICoordinator {
     }
 }
 
-extension BaseCoordinator2: TransitionDelegate {
+extension BaseCoordinator: TransitionDelegate {
     public func transitionDidPop(_ transition: some Transition, controller: UIViewController, navigationController: UINavigationController, coordinator: some Coordinator) {
         guard let uiCoordinator = coordinator as? UICoordinator else { return }
         /// we clean the coordinator a bit. First, we remove the last transition
-        /// then we remove controller from the list of child controllers
         uiCoordinator.transitions.removeLast()
+        /// then we remove controller from the list of child controllers
         uiCoordinator.childControllers.removeAll(where: { $0 === controller })
         
         /// if there is no more controllers, we can remove this coordinator
@@ -163,6 +171,7 @@ extension BaseCoordinator2: TransitionDelegate {
             uiCoordinator.childCoordinators.removeAll()
             uiCoordinator.parentCoordinator?.childDidFinish(self)
             
+            /// if we are removin this coordinator, we need to also remove the last transition of the parent.
             if let parentCoordinator = coordinator.parentCoordinator as? UICoordinator {
                 parentCoordinator.transitions.removeLast()
                 parentCoordinator.transition.reassignNavigationDelegate()
@@ -185,7 +194,7 @@ extension BaseCoordinator2: TransitionDelegate {
         
         let isCoordinatorMainRootOfNavigation = uiCoordinator.childControllers.contains(where: { $0 === firstController })
         
-        /// if the current coordinator has the first controller of the navigation we can assure that this is the one that will be remaining after the popToRoot.
+        /// if the current coordinator has the first controller of the navigation we can assure that this coordinator will be remaining after the popToRoot.
         if isCoordinatorMainRootOfNavigation {
             /// delete all transitions and controllers but the first one, which is the one that started (pushed) the navigation controller
             uiCoordinator.transitions.removeSubrange(1...)
@@ -201,7 +210,7 @@ extension BaseCoordinator2: TransitionDelegate {
             uiCoordinator.parentCoordinator?.childDidFinish(self)
             
             /// we call the parent to make sure we get to the root
-            if let parent = uiCoordinator.parentCoordinator as? BaseCoordinator2 {
+            if let parent = uiCoordinator.parentCoordinator as? BaseCoordinator {
                 parent.transitionDidPopToRoot(
                     transition,
                     navigationController: navigationController,
@@ -234,7 +243,7 @@ extension BaseCoordinator2: TransitionDelegate {
             coordinator.childCoordinators.removeAll()
             coordinator.parentCoordinator?.childDidFinish(self)
 
-            if let parent = coordinator.parentCoordinator as? BaseCoordinator2 {
+            if let parent = coordinator.parentCoordinator as? BaseCoordinator {
                 parent.transitionDidDismiss(transition, navigationController: navigationController, coordinator: parent)
             }
             

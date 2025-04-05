@@ -9,7 +9,7 @@ import Combine
 import Flowie
 import class SwiftUI.UIHostingController
 
-final class FeatureBCoordinator: BaseCoordinator2 {
+final class FeatureBCoordinator: BaseCoordinator {
     override func start() {
         let viewModel = FeatureBViewModel()
         viewModel.router = self

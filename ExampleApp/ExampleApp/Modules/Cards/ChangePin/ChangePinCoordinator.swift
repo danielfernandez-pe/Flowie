@@ -9,7 +9,7 @@ import Flowie
 import UIKit
 import class SwiftUI.UIHostingController
 
-final class ChangePinCoordinator: BaseCoordinator2 {
+final class ChangePinCoordinator: BaseCoordinator {
     override func start() {
         let changePinController = SwiftUI.UIHostingController(rootView: ChangePinView())
         open(controller: changePinController, with: transition)

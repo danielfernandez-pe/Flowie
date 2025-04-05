@@ -17,6 +17,10 @@ open class BaseRootCoordinator: Coordinator {
     
     public init() {}
     
+    deinit {
+        logging?.log("Deinit \(Self.self) with memory \(Unmanaged.passUnretained(self).toOpaque())")
+    }
+    
     open func start() {
         fatalError("Subclasses must implement start()")
     }
@@ -48,11 +52,13 @@ open class BaseRootCoordinator: Coordinator {
     public func removeControllers(from childCoordinator: some Coordinator, didChildPresentedController: Bool, completion: @escaping () -> Void) {
         guard let childCoordinator = childCoordinator as? UICoordinator,
             let lastChildTransition = lastChildTransitions[childCoordinator.id] else {
+            /// if the child coordinator we are removing is not UICoordinator, then it means it doesn't have controllers to be remove. So we can just complete
             completion()
             return
         }
         
         if let pushTransition = lastChildTransition as? PushTransition {
+            /// The childCoordinator must have a sourceCoordinator, if not we don't know where to go back to since this RootCoordinator doesn't own controllers on it's own
             guard let sourceCoordinator = childCoordinator.sourceCoordinator else {
                 logging?.log("Deleting child coordinator of a RootCoordinator. If you expected some transition to happen check if you set sourceCoordinator for the child coordinator that is been dismiss.")
                 completion()
@@ -103,9 +109,5 @@ open class BaseRootCoordinator: Coordinator {
     
     private func coordinatorDidFinish() {
         finished?(finishedValue)
-    }
-    
-    deinit {
-        logging?.log("Deinit \(Self.self) with memory \(Unmanaged.passUnretained(self).toOpaque())")
     }
 }

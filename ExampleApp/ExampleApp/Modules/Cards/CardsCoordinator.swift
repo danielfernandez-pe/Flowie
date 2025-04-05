@@ -15,7 +15,7 @@ protocol CardsExternalRouting: AnyObject {
     func openCreateInstallmentsCard(_ coordinator: some Coordinator, currentTransition: some Transition)
 }
 
-final class CardsCoordinator: BaseCoordinator2 {
+final class CardsCoordinator: BaseCoordinator {
     weak var externalRouter: CardsExternalRouting?
     
     override func start() {

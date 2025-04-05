@@ -9,7 +9,7 @@ import Flowie
 import UIKit
 import class SwiftUI.UIHostingController
 
-final class AddCardCoordinator: BaseCoordinator2 {
+final class AddCardCoordinator: BaseCoordinator {
     enum CoordinatorResult {
         case openCreateInstallmentsCard
     }

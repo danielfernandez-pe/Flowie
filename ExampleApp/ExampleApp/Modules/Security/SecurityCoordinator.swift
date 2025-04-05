@@ -9,7 +9,7 @@ import Flowie
 import UIKit
 import class SwiftUI.UIHostingController
 
-final class SecurityCoordinator: BaseCoordinator2 {    
+final class SecurityCoordinator: BaseCoordinator {    
     override func start() {
         let securityController = UIHostingController(rootView: SecurityView(coordinator: self))
         open(controller: securityController, with: transition)
