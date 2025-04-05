@@ -10,12 +10,12 @@ import UIKit
 import class SwiftUI.UIHostingController
 
 protocol CardsExternalRouting: AnyObject {
-    func needAuthorization(_ coordinator: BaseCoordinator, currentTransition: some Transition, completion: @escaping (Bool) -> Void)
-    func needAuthorizationPushFlow(_ coordinator: BaseCoordinator, currentTransition: some Transition, completion: @escaping (Bool) -> Void)
-    func openCreateInstallmentsCard(_ coordinator: BaseCoordinator, currentTransition: some Transition)
+    func needAuthorization(_ coordinator: some Coordinator, currentTransition: some Transition, completion: @escaping (Bool) -> Void)
+    func needAuthorizationPushFlow(_ coordinator: some Coordinator, currentTransition: some Transition, completion: @escaping (Bool) -> Void)
+    func openCreateInstallmentsCard(_ coordinator: some Coordinator, currentTransition: some Transition)
 }
 
-final class CardsCoordinator: BaseCoordinator {
+final class CardsCoordinator: BaseCoordinator2 {
     weak var externalRouter: CardsExternalRouting?
     
     override func start() {

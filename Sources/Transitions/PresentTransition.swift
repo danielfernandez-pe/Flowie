@@ -26,7 +26,7 @@ public final class PresentTransition: NSObject, Transition {
     }
     
     public weak var delegate: TransitionDelegate?
-    public weak var coordinator: BaseCoordinator?
+    public weak var coordinator: (any Coordinator)?
     public let navigationController = UINavigationController()
     private let presentingViewController: UIViewController
     private let parameters: PresentParameters?

@@ -17,8 +17,7 @@ extension Logger: @retroactive FlowLogging {
     }
 }
 
-final class AppCoordinator: BaseCoordinator {
-    override var isRootCoordinator: Bool { true }
+final class AppCoordinator: BaseRootCoordinator {
     private let window: UIWindow
     
     init(window: UIWindow) {
@@ -40,16 +39,16 @@ final class AppCoordinator: BaseCoordinator {
 
 /*
  test cases:
- - push and pop by the system ✅
- - push coordinator and pop by the system ✅
- - push coordinator, push, close, close ✅
- - push, push coordinator, close, close ✅
- - push, push coordinator, pop by the system, pop by the system ✅
+ - push and pop by the system. ✅
+ - push coordinator and pop by the system. ✅
+ - push coordinator, push, close, close.  ✅
+ - push, push coordinator, close, close. ✅
+ - push, push coordinator, pop by the system, pop by the system. ✅
  - push coordinator, push, finish. ✅
- - present and dismiss by system ✅
- - present and dismiss by button ✅
- - present coordinator and dismiss programatically ✅
- - present coordinator, present and finish should dismiss both and go back to parent coordinator ✅
- - push coordinator, present coordinator. Finish, should maintain the pushed coordinator. Finish again, back to root ✅
- - present, push coordinator, finish. It should maintain the presented controller because it's from the previous coordinator. Then dismiss. ✅
+ - present and dismiss by system. ✅
+ - present and close. ✅
+ - present coordinator and close. ✅
+ - present coordinator, present and finish coordinator should dismiss both and go back to parent coordinator. ✅
+ - push coordinator, present coordinator. Finish, should maintain the pushed coordinator. Finish again, back to root. ✅
+ - present, push coordinator, finish. It should maintain the presented controller because it's from the previous coordinator. Then close. ✅
  */

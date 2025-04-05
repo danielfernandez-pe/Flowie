@@ -6,26 +6,25 @@
 //
 
 import SwiftUI
-import Combine
 
 @MainActor
 public protocol TransitionDelegate: AnyObject {
     func transitionDidPop(_ transition: some Transition,
                           controller: UIViewController,
                           navigationController: UINavigationController,
-                          coordinator: BaseCoordinator)
+                          coordinator: some Coordinator)
     func transitionDidPopToRoot(_ transition: some Transition,
                                 navigationController: UINavigationController,
-                                coordinator: BaseCoordinator)
+                                coordinator: some Coordinator)
     func transitionDidDismiss(_ transition: some Transition,
                               navigationController: UINavigationController,
-                              coordinator: BaseCoordinator)
+                              coordinator: some Coordinator)
 }
 
 @MainActor
 public protocol Transition: AnyObject {
     var delegate: TransitionDelegate? { get set }
-    var coordinator: BaseCoordinator? { get set }
+    var coordinator: (any Coordinator)? { get set }
     var isDismissing: Bool { get set }
     
     var rootViewController: UIViewController { get }

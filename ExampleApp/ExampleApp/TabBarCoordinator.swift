@@ -9,15 +9,12 @@ import Flowie
 import UIKit
 import class SwiftUI.UIHostingController
 
-final class TabBarCoordinator: BaseCoordinator {
-    override var isRootCoordinator: Bool { true }
-    
+final class TabBarCoordinator: BaseRootCoordinator {
     private let window: UIWindow
     private let tabBarController = UITabBarController()
     
     init(window: UIWindow) {
         self.window = window
-        super.init()
     }
     
     override func start() {
@@ -46,7 +43,7 @@ final class TabBarCoordinator: BaseCoordinator {
 }
 
 extension TabBarCoordinator: CardsExternalRouting {
-    func needAuthorization(_ coordinator: BaseCoordinator, currentTransition: some Transition, completion: @escaping (Bool) -> Void) {
+    func needAuthorization(_ coordinator: some Coordinator, currentTransition: some Transition, completion: @escaping (Bool) -> Void) {
         guard !currentTransition.isDismissing else { return }
         let presentTransition = PresentTransition(presentingViewController: currentTransition.rootViewController)
         let securityCoordinator = SecurityCoordinator(transition: presentTransition)
@@ -58,10 +55,10 @@ extension TabBarCoordinator: CardsExternalRouting {
         }
     }
     
-    func needAuthorizationPushFlow(_ coordinator: BaseCoordinator, currentTransition: some Transition, completion: @escaping (Bool) -> Void) {
+    func needAuthorizationPushFlow(_ coordinator: some Coordinator, currentTransition: some Transition, completion: @escaping (Bool) -> Void) {
         let pushTransition = PushTransition(navigationController: currentTransition.navigationController)
         let securityCoordinator = SecurityCoordinator(transition: pushTransition)
-        securityCoordinator.sourceCoordinator = coordinator
+        securityCoordinator.sourceCoordinator = coordinator as? UICoordinator
         open(coordinator: securityCoordinator)
         
         securityCoordinator.finished = { value in
@@ -70,7 +67,7 @@ extension TabBarCoordinator: CardsExternalRouting {
         }
     }
     
-    func openCreateInstallmentsCard(_ coordinator: BaseCoordinator, currentTransition: some Transition) {
+    func openCreateInstallmentsCard(_ coordinator: some Coordinator, currentTransition: some Transition) {
         let presentTransition = PresentTransition(presentingViewController: currentTransition.rootViewController)
         let installmentsCoordinator = CreateInstallmentsCardCoordinator(transition: presentTransition)
         open(coordinator: installmentsCoordinator)

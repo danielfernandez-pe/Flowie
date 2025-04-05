@@ -9,7 +9,7 @@ import Flowie
 import UIKit
 import class SwiftUI.UIHostingController
 
-final class CreateInstallmentsCardCoordinator: BaseCoordinator {
+final class CreateInstallmentsCardCoordinator: BaseCoordinator2 {
     override func start() {
         let createCardController = UIHostingController(rootView: CreateInstallmentsCardView(coordinator: self))
         open(controller: createCardController, with: transition)
@@ -23,6 +23,6 @@ final class CreateInstallmentsCardCoordinator: BaseCoordinator {
     }
     
     func finishTapped() {
-        finish()
+        finish(with: nil)
     }
 }

@@ -31,7 +31,7 @@ public final class PushTransition: NSObject, Transition {
     }
     
     public weak var delegate: TransitionDelegate?
-    public weak var coordinator: BaseCoordinator?
+    public weak var coordinator: (any Coordinator)?
     public let navigationController: UINavigationController
     private let parameters: PushParameters?
     

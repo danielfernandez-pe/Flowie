@@ -9,7 +9,7 @@ import Flowie
 import UIKit
 import class SwiftUI.UIHostingController
 
-final class AddCardCoordinator: BaseCoordinator {
+final class AddCardCoordinator: BaseCoordinator2 {
     enum CoordinatorResult {
         case openCreateInstallmentsCard
     }
@@ -24,6 +24,6 @@ final class AddCardCoordinator: BaseCoordinator {
     }
     
     func finishTheFlow() {
-        finish()
+        finish(with: nil)
     }
 }

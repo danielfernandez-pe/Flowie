@@ -17,9 +17,7 @@ extension Logger: @retroactive FlowLogging {
     }
 }
 
-final class AppCoordinator: BaseCoordinator {
-    override var isRootCoordinator: Bool { true }
-    
+final class AppCoordinator: BaseRootCoordinator {
     private let window: UIWindow
     
     init(window: UIWindow) {

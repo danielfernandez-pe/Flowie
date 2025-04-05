@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import Combine
 
 @MainActor
 open class BaseCoordinator {
@@ -125,7 +124,7 @@ open class BaseCoordinator {
         }
         
         transition.delegate = self
-        transition.coordinator = self
+//        transition.coordinator = self
         transition.open(controller)
     }
     
@@ -325,24 +324,24 @@ extension BaseCoordinator: TransitionDelegate {
     public func transitionDidPop(_ transition: some Transition,
                                  controller: UIViewController,
                                  navigationController: UINavigationController,
-                                 coordinator: BaseCoordinator) {
-        /// we clean the coordinator a bit. First, we remove the last transition
-        /// then we remove controller from the list of child controllers
-        coordinator.transitions.removeLast()
-        coordinator.childControllers.removeAll(where: { $0 === controller })
-        
-        /// if there is no more controllers, we can remove this coordinator
-        if coordinator.childControllers.isEmpty {
-            coordinator.childCoordinators.removeAll()
-            coordinator.parentCoordinator?.transitions.removeLast()
-            coordinator.parentCoordinator?.childDidFinish(self)
-            parentCoordinator?.transition.reassignNavigationDelegate()
-            
-            notifyThatCoordinatorFinished()
-        } else {
-            /// it the coordinator still have child controllers to manage, then we reassign the navigation delegate to the current transition.
-            coordinator.transition.reassignNavigationDelegate()
-        }
+                                 coordinator: some Coordinator) {
+//        /// we clean the coordinator a bit. First, we remove the last transition
+//        /// then we remove controller from the list of child controllers
+//        coordinator.transitions.removeLast()
+//        coordinator.childControllers.removeAll(where: { $0 === controller })
+//        
+//        /// if there is no more controllers, we can remove this coordinator
+//        if coordinator.childControllers.isEmpty {
+//            coordinator.childCoordinators.removeAll()
+//            coordinator.parentCoordinator?.transitions.removeLast()
+//            coordinator.parentCoordinator?.childDidFinish(self)
+//            parentCoordinator?.transition.reassignNavigationDelegate()
+//            
+//            notifyThatCoordinatorFinished()
+//        } else {
+//            /// it the coordinator still have child controllers to manage, then we reassign the navigation delegate to the current transition.
+//            coordinator.transition.reassignNavigationDelegate()
+//        }
     }
     
     ///
@@ -350,43 +349,43 @@ extension BaseCoordinator: TransitionDelegate {
     ///
     public func transitionDidPopToRoot(_ transition: some Transition,
                                        navigationController: UINavigationController,
-                                       coordinator: BaseCoordinator) {
-        guard let firstController = navigationController.viewControllers.first else { return }
-        
-        /// when is the root coordinator, we only need to remove the last transition since it doesn't have child controllers
-        if isRootCoordinator {
-            transitions.removeLast()
-            return
-        }
-        
-        let isCoordinatorMainRootOfNavigation = coordinator.childControllers.contains(where: { $0 === firstController })
-        
-        /// if the current coordinator has the first controller of the navigation we can assure that this is the one that will be remaining after the popToRoot.
-        if isCoordinatorMainRootOfNavigation {
-            /// delete all transitions and controllers but the first one, which is the one that started (pushed) the navigation controller
-            coordinator.transitions.removeSubrange(1...)
-            coordinator.childControllers.removeSubrange(1...)
-            
-            /// we need the current transition to be the delegate again
-            coordinator.transition.reassignNavigationDelegate()
-        } else {
-            /// this coordinator will must likely be remove from the parent so we clean and finish it.
-            coordinator.transitions.removeAll()
-            coordinator.childControllers.removeAll()
-            coordinator.childCoordinators.removeAll()
-            coordinator.parentCoordinator?.childDidFinish(self)
-            
-            /// we call the parent to make sure we get to the root
-            if let parent = coordinator.parentCoordinator {
-                parent.transitionDidPopToRoot(
-                    transition,
-                    navigationController: navigationController,
-                    coordinator: parent
-                )
-            }
-            
-            notifyThatCoordinatorFinished()
-        }
+                                       coordinator: some Coordinator) {
+//        guard let firstController = navigationController.viewControllers.first else { return }
+//        
+//        /// when is the root coordinator, we only need to remove the last transition since it doesn't have child controllers
+//        if isRootCoordinator {
+//            transitions.removeLast()
+//            return
+//        }
+//        
+//        let isCoordinatorMainRootOfNavigation = coordinator.childControllers.contains(where: { $0 === firstController })
+//        
+//        /// if the current coordinator has the first controller of the navigation we can assure that this is the one that will be remaining after the popToRoot.
+//        if isCoordinatorMainRootOfNavigation {
+//            /// delete all transitions and controllers but the first one, which is the one that started (pushed) the navigation controller
+//            coordinator.transitions.removeSubrange(1...)
+//            coordinator.childControllers.removeSubrange(1...)
+//            
+//            /// we need the current transition to be the delegate again
+//            coordinator.transition.reassignNavigationDelegate()
+//        } else {
+//            /// this coordinator will must likely be remove from the parent so we clean and finish it.
+//            coordinator.transitions.removeAll()
+//            coordinator.childControllers.removeAll()
+//            coordinator.childCoordinators.removeAll()
+//            coordinator.parentCoordinator?.childDidFinish(self)
+//            
+//            /// we call the parent to make sure we get to the root
+//            if let parent = coordinator.parentCoordinator {
+//                parent.transitionDidPopToRoot(
+//                    transition,
+//                    navigationController: navigationController,
+//                    coordinator: parent
+//                )
+//            }
+//            
+//            notifyThatCoordinatorFinished()
+//        }
     }
     
     ///
@@ -395,28 +394,28 @@ extension BaseCoordinator: TransitionDelegate {
     /// This method is called when the user swipes down a presented controller or when the flow
     /// is dismissed programmatically.
     ///
-    public func transitionDidDismiss(_ transition: some Transition, navigationController: UINavigationController, coordinator: BaseCoordinator) {
-        /// we delete all possible PushTransitions after the PresentTransition
-        if let index = coordinator.transitions.firstIndex(where: { $0 === transition }) {
-            coordinator.transitions.removeSubrange(index...)
-        }
-        
-        /// we remove all the controllers from the navigation that are part of the child controllers of this coordinator
-        for controller in navigationController.viewControllers {
-            coordinator.childControllers.removeAll(where: { $0 === controller })
-        }
-        
-        /// if there is no more child controllers, we clean and finish the coordinator
-        if coordinator.childControllers.isEmpty && !coordinator.isRootCoordinator {
-            coordinator.childCoordinators.removeAll()
-            coordinator.parentCoordinator?.childDidFinish(self)
-
-            if let parent = coordinator.parentCoordinator {
-                parent.transitionDidDismiss(transition, navigationController: navigationController, coordinator: parent)
-            }
-            
-            notifyThatCoordinatorFinished()
-        }
+    public func transitionDidDismiss(_ transition: some Transition, navigationController: UINavigationController, coordinator: some Coordinator) {
+//        /// we delete all possible PushTransitions after the PresentTransition
+//        if let index = coordinator.transitions.firstIndex(where: { $0 === transition }) {
+//            coordinator.transitions.removeSubrange(index...)
+//        }
+//        
+//        /// we remove all the controllers from the navigation that are part of the child controllers of this coordinator
+//        for controller in navigationController.viewControllers {
+//            coordinator.childControllers.removeAll(where: { $0 === controller })
+//        }
+//        
+//        /// if there is no more child controllers, we clean and finish the coordinator
+//        if coordinator.childControllers.isEmpty && !coordinator.isRootCoordinator {
+//            coordinator.childCoordinators.removeAll()
+//            coordinator.parentCoordinator?.childDidFinish(self)
+//
+//            if let parent = coordinator.parentCoordinator {
+//                parent.transitionDidDismiss(transition, navigationController: navigationController, coordinator: parent)
+//            }
+//            
+//            notifyThatCoordinatorFinished()
+//        }
     }
     
     private func notifyThatCoordinatorFinished() {
