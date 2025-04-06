@@ -57,6 +57,8 @@ open class BaseRootCoordinator: Coordinator {
             return
         }
         
+        lastChildTransitions[childCoordinator.id] = nil
+        
         if let pushTransition = lastChildTransition as? PushTransition {
             /// The childCoordinator must have a sourceCoordinator, if not we don't know where to go back to since this RootCoordinator doesn't own controllers on it's own
             guard let sourceCoordinator = childCoordinator.sourceCoordinator else {
@@ -74,20 +76,16 @@ open class BaseRootCoordinator: Coordinator {
             if didChildPresentedController {
                 pushTransition.dismiss {
                     pushTransition.pop(to: lastController, completion: nil)
-                    self.lastChildTransitions[childCoordinator.id] = nil
                     completion()
                 }
             } else {
                 pushTransition.pop(to: lastController) {
-                    self.lastChildTransitions[childCoordinator.id] = nil
                     completion()
                 }
             }
         } else if let presentTransition = lastChildTransition as? PresentTransition {
             presentTransition.delegate = nil
             presentTransition.close {
-                self.lastChildTransitions[childCoordinator.id] = nil
-                /// we don't need to reassign the delegate, because the last transition was a presentation and that had it's own navigation controller
                 completion()
             }
         } else {
