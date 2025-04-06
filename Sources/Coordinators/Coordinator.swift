@@ -7,6 +7,10 @@
 
 import UIKit
 
+///
+/// This coordinator should be use for coordinators that will manage only child coordinators.
+/// E.g. AppCoordinator, TabBarCoordinator.
+///
 @MainActor
 public protocol Coordinator: AnyObject {
     var id: UUID { get }
@@ -93,6 +97,10 @@ public extension Coordinator {
     }
 }
 
+///
+/// This coordinator should be use for coordinators that will manage coordinators and controllers using transitions.
+/// E.g. feature coordinators like AuthCoordinator, SettingsCoordinator, BuyProductCoordinator, etc.
+///
 public protocol UICoordinator: Coordinator {
     ///
     /// This property indicates the coordinator that started the creation of the the new coordinator. Is not necessarilly the parent.
