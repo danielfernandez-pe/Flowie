@@ -44,7 +44,6 @@ final class TabBarCoordinator: BaseRootCoordinator {
 
 extension TabBarCoordinator: CardsExternalRouting {
     func needAuthorization(_ coordinator: some Coordinator, currentTransition: some Transition, completion: @escaping (Bool) -> Void) {
-        guard !currentTransition.isDismissing else { return }
         let presentTransition = PresentTransition(presentingViewController: currentTransition.rootViewController)
         let securityCoordinator = SecurityCoordinator(transition: presentTransition)
         open(coordinator: securityCoordinator)

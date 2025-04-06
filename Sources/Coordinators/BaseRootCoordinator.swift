@@ -7,13 +7,13 @@
 
 import UIKit
 
-open class BaseRootCoordinator: Coordinator {
+open class BaseRootCoordinator: RootCoordinator {
     public var id: UUID = UUID()
     public var finishedValue: Any?
     public var finished: ((Any?) -> Void)?
     public var parentCoordinator: (any Coordinator)?
     public var childCoordinators: [any Coordinator] = []
-    var lastChildTransitions: [UUID: (any Transition)] = [:]
+    public var lastChildTransitions: [UUID: (any Transition)] = [:]
     
     public init() {}
     
@@ -26,6 +26,11 @@ open class BaseRootCoordinator: Coordinator {
     }
     
     public func open(coordinator: some Coordinator) {
+        guard !isAnyTransitionDismissing() else {
+            logging?.log("There is a transition dismissing. \(Self.self) failed to open the \(coordinator.self)")
+            return
+        }
+        
         if let uiCoordinator = coordinator as? UICoordinator {
             lastChildTransitions[coordinator.id] = uiCoordinator.transition
         }

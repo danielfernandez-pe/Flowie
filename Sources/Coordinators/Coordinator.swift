@@ -7,10 +7,6 @@
 
 import UIKit
 
-///
-/// This coordinator should be use for coordinators that will manage only child coordinators.
-/// E.g. AppCoordinator, TabBarCoordinator.
-///
 @MainActor
 public protocol Coordinator: AnyObject {
     var id: UUID { get }
@@ -95,6 +91,45 @@ public extension Coordinator {
     func finish() {
         finish(with: nil)
     }
+    
+    func isAnyTransitionDismissing() -> Bool {
+        // Check if this coordinator has a dismissing transition
+        if let uiCoordinator = self as? UICoordinator {
+            if uiCoordinator.transition.isDismissing {
+                return true
+            }
+        }
+        
+        // Check if this coordinator (if it's a root coordinator) has any dismissing transitions
+        if let rootCoordinator = self as? RootCoordinator {
+            if rootCoordinator.lastChildTransitions.values.contains(where: { $0.isDismissing }) {
+                return true
+            }
+        }
+        
+        // Check if this coordinator's parent has any dismissing transitions
+        if let rootParent = parentCoordinator as? RootCoordinator {
+            if rootParent.lastChildTransitions.values.contains(where: { $0.isDismissing }) {
+                return true
+            }
+        }
+        
+        // Recursively check parent
+        return parentCoordinator?.isAnyTransitionDismissing() ?? false
+    }
+}
+
+///
+/// This coordinator should be use for coordinators that will manage only child coordinators.
+/// E.g. AppCoordinator, TabBarCoordinator.
+///
+public protocol RootCoordinator: Coordinator {
+    ///
+    /// Every time the root coordinator opens any coordinator, we will save it's last transition.
+    /// Having the last transition is useful to delete properly controllers of possible UICoordinators or just checking if
+    /// the last transition is dismissing before trying to present something again.
+    ///
+    var lastChildTransitions: [UUID: (any Transition)] { get set }
 }
 
 ///

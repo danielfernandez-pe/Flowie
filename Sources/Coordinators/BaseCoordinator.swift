@@ -51,21 +51,13 @@ open class BaseCoordinator: UICoordinator {
     }
     
     public func open(coordinator: some Coordinator) {
-        /// Usually UICoordinators only open other UICoordinators
-        guard let uiCoordinator = coordinator as? UICoordinator else {
+        guard !isAnyTransitionDismissing() else {
+            logging?.log("There is a transition dismissing. \(Self.self) failed to open the \(coordinator.self)")
             return
         }
         
-        var parentCoordinatorTransitionIsDismissing = false
-
-        if let parent = parentCoordinator as? UICoordinator {
-            parentCoordinatorTransitionIsDismissing = parent.transition.isDismissing
-        }
-        
-        /// We need to check if either this coordinator or it's parent might be in the middle of a dismissing transition
-        if transition.isDismissing || parentCoordinatorTransitionIsDismissing {
-            logging?.log("Opening coordinator \(type(of: coordinator)) from \(type(of: self)) but the last transition \(type(of: transition)) has a dismissing state of \(transition.isDismissing)")
-            logging?.log("Failed to open the coordinator")
+        /// Usually UICoordinators only open other UICoordinators
+        guard let uiCoordinator = coordinator as? UICoordinator else {
             return
         }
         
