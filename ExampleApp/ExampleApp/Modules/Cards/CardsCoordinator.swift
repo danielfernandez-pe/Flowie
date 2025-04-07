@@ -38,6 +38,7 @@ final class CardsCoordinator: BaseCoordinator {
     }
     
     func pushNewFlow() {
+        guard !transition.isDismissing else { return }
         externalRouter?.needAuthorizationPushFlow(self, currentTransition: transition, completion: { [weak self] authorized in
             guard let self else { return }
             if authorized {
@@ -50,6 +51,7 @@ final class CardsCoordinator: BaseCoordinator {
     }
     
     func startChangePinFlow() {
+        guard !transition.isDismissing else { return }
         externalRouter?.needAuthorization(self, currentTransition: transition) { [weak self] authorized in
             guard let self else { return }
             if authorized {
