@@ -92,24 +92,31 @@ public extension Coordinator {
         finish(with: nil)
     }
     
+    ///
+    /// This method is used in Coordinators when you want to open another coordinator.
+    /// We need to avoid any problem with presenting a view in another that is not in the view hierarchy.
+    ///
+    /// This usually happens when user try to present really fast a controller when the previous was in the process of
+    /// been dismissed.
+    ///
+    /// There is an edge case that is not cover here to avoid recursively checking the entire tree of Coordinators.
+    /// We don't check the child coordinator transitions (in case of RootCoordinator might be needed). This could happen
+    /// in cases where from a child coordinator we need the parent coordinator present a coordinator from another module.
+    ///
+    /// A solution to this edge case is to manually check if the current transition in the child is dismissing by adding this
+    /// `guard !transition.isDismissing else { return }` before talking to the parent through a delegate.
+    ///
     func isAnyTransitionDismissing() -> Bool {
-        // Check if this coordinator has a dismissing transition
+        // For UICoordinators, we check if our last transition is dismissing.
         if let uiCoordinator = self as? UICoordinator {
             if uiCoordinator.transition.isDismissing {
                 return true
             }
         }
         
-        // Check if this coordinator (if it's a root coordinator) has any dismissing transitions
+        // For RootCoordinators, we check if any of the last child transition is dismissing.
         if let rootCoordinator = self as? RootCoordinator {
             if rootCoordinator.lastChildTransitions.values.contains(where: { $0.isDismissing }) {
-                return true
-            }
-        }
-        
-        // Check if this coordinator's parent has any dismissing transitions
-        if let rootParent = parentCoordinator as? RootCoordinator {
-            if rootParent.lastChildTransitions.values.contains(where: { $0.isDismissing }) {
                 return true
             }
         }
