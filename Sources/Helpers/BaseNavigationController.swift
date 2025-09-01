@@ -34,6 +34,10 @@ public final class BaseNavigationController: UINavigationController {
             navigationBarAppearance.configureWithTransparentBackground()
         }
 
+        // Hide back button title
+        navigationBarAppearance.backButtonAppearance.normal.titleTextAttributes = [.foregroundColor: UIColor.clear]
+        navigationBarAppearance.backButtonAppearance.highlighted.titleTextAttributes = [.foregroundColor: UIColor.clear]
+        
         // Apply appearance to all navigation bar states
         navigationBar.standardAppearance = navigationBarAppearance
         navigationBar.scrollEdgeAppearance = navigationBarAppearance
