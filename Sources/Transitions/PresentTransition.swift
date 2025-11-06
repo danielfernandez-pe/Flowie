@@ -27,15 +27,20 @@ public final class PresentTransition: NSObject, Transition {
     
     public weak var delegate: TransitionDelegate?
     public weak var coordinator: (any Coordinator)?
-    public let navigationController = UINavigationController()
+    public let navigationController: UINavigationController
     private let presentingViewController: UIViewController
     private let parameters: PresentParameters?
     
     public var isDismissing: Bool = false
 
-    public init(presentingViewController: UIViewController, parameters: PresentParameters? = nil) {
+    public init(
+        presentingViewController: UIViewController,
+        parameters: PresentParameters? = nil,
+        navigationStyle: NavigationStyle? = nil
+    ) {
         self.presentingViewController = presentingViewController
         self.parameters = parameters
+        self.navigationController = BaseNavigationController(style: navigationStyle)
         super.init()
         navigationController.presentationController?.delegate = self
     }

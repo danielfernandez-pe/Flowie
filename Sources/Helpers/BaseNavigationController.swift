@@ -7,17 +7,28 @@
 
 import UIKit
 
-public enum NavigationStyle {
-    case transparent
-    case `default`
+public struct NavigationStyle {
+    let isTransparent: Bool
+    let prefersLargeTitles: Bool
+    let tintColor: UIColor
+    
+    public init(
+        isTransparent: Bool = false,
+        prefersLargeTitles: Bool = false,
+        tintColor: UIColor = .systemBlue // Default iOS blue
+    ) {
+        self.isTransparent = isTransparent
+        self.prefersLargeTitles = prefersLargeTitles
+        self.tintColor = tintColor
+    }
 }
 
 public final class BaseNavigationController: UINavigationController {
     let style: NavigationStyle
     var disableGesture = false
     
-    public init(style: NavigationStyle = .default) {
-        self.style = style
+    public init(style: NavigationStyle? = nil) {
+        self.style = style ?? .init()
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -27,11 +38,11 @@ public final class BaseNavigationController: UINavigationController {
     
     func initAppearance() {
         let navigationBarAppearance = UINavigationBarAppearance()
-        switch style {
-        case .default:
-            navigationBarAppearance.configureWithDefaultBackground()
-        case .transparent:
+        
+        if style.isTransparent {
             navigationBarAppearance.configureWithTransparentBackground()
+        } else {
+            navigationBarAppearance.configureWithDefaultBackground()
         }
 
         // Hide back button title
@@ -43,9 +54,10 @@ public final class BaseNavigationController: UINavigationController {
         navigationBar.scrollEdgeAppearance = navigationBarAppearance
         navigationBar.compactAppearance = navigationBarAppearance
         navigationBar.compactScrollEdgeAppearance = navigationBarAppearance
+        navigationBar.prefersLargeTitles = style.prefersLargeTitles
 
         // Tint color for back button and other interactive elements
-        navigationBar.tintColor = .systemBlue // Default iOS blue
+        navigationBar.tintColor = style.tintColor
     }
     
     public override func viewDidLoad() {
