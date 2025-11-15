@@ -44,8 +44,8 @@ struct FeatureBView: View {
         .navigationTitle("Feature B")
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
-                Button(action: {
-                    print("Leading button tapped")
+                Button(action: { [weak viewModel] in
+                    viewModel?.close()
                 }) {
                     Text("Dismiss")
                 }
