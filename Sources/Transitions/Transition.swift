@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-@MainActor
 public protocol TransitionDelegate: AnyObject {
     func transitionDidPop(_ transition: some Transition,
                           controller: UIViewController,
@@ -21,7 +20,6 @@ public protocol TransitionDelegate: AnyObject {
                               coordinator: some Coordinator)
 }
 
-@MainActor
 public protocol Transition: AnyObject {
     var delegate: TransitionDelegate? { get set }
     var coordinator: (any Coordinator)? { get set }

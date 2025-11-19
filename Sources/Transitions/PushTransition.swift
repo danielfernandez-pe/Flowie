@@ -24,7 +24,6 @@ public struct PushParameters {
     }
 }
 
-@MainActor
 public final class PushTransition: NSObject, Transition {
     public var rootViewController: UIViewController {
         navigationController.topViewController?.lastPresentedViewController ?? navigationController
@@ -44,7 +43,7 @@ public final class PushTransition: NSObject, Transition {
         navigationController.delegate = self
     }
 
-    deinit {
+    isolated deinit {
         logging?.log("Deinit \(Self.self)")
     }
     

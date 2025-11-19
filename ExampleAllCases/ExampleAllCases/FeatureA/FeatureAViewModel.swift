@@ -7,12 +7,10 @@
 
 import Combine
 
-@MainActor
 protocol FeatureARouting: AnyObject {
     func featureARouting(to route: FeatureAViewModel.Route)
 }
 
-@MainActor
 final class FeatureAViewModel {
     enum Route {
         case pushSameFlow

@@ -7,7 +7,6 @@
 
 import UIKit
 
-@MainActor
 public protocol Coordinator: AnyObject {
     var id: UUID { get }
     

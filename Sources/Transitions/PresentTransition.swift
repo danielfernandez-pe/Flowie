@@ -19,7 +19,6 @@ public struct PresentParameters {
     }
 }
 
-@MainActor
 public final class PresentTransition: NSObject, Transition {
     public var rootViewController: UIViewController {
         navigationController.topViewController?.lastPresentedViewController ?? navigationController
@@ -45,7 +44,7 @@ public final class PresentTransition: NSObject, Transition {
         navigationController.presentationController?.delegate = self
     }
     
-    deinit {
+    isolated deinit {
         logging?.log("Deinit \(Self.self)")
     }
 

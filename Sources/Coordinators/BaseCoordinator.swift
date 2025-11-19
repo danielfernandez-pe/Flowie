@@ -30,7 +30,7 @@ open class BaseCoordinator: UICoordinator {
         logging?.log("Init \(Self.self) with memory \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
-    deinit {
+    isolated deinit {
         logging?.log("Deinit \(Self.self) with memory \(Unmanaged.passUnretained(self).toOpaque())")
     }
     

@@ -17,7 +17,7 @@ open class BaseRootCoordinator: RootCoordinator {
     
     public init() {}
     
-    deinit {
+    isolated deinit {
         logging?.log("Deinit \(Self.self) with memory \(Unmanaged.passUnretained(self).toOpaque())")
     }
     
